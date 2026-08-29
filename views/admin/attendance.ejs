@@ -1,0 +1,48 @@
+<%- include('../partials/header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Attendance Reports</h1>
+    <p class="text-sm text-soft mt-0.5">Class-wise and school-wide attendance, at a glance.</p>
+  </div>
+  <a href="/admin/reports/export/attendance" class="btn btn-ghost"><i class="fa-solid fa-file-export"></i>Export CSV</a>
+</div>
+
+<div class="surface rounded-2xl p-5 mb-5">
+  <div class="font-extrabold text-sm mb-3">Weekly Attendance — <%= cls %></div>
+  <div class="flex items-end gap-3 h-32">
+    <% last7.forEach(d => { %>
+      <div class="flex-1 flex flex-col items-center justify-end h-full">
+        <div class="text-[11px] font-mono mb-1 text-soft"><%= d.pct %>%</div>
+        <div class="w-full rounded-t-lg" style="height:<%= Math.max(d.pct*0.9, 3) %>px; background:#4C8DA6;"></div>
+        <div class="text-[11px] font-bold mt-1.5 text-soft"><%= d.label %></div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<form method="GET" action="/admin/attendance" class="flex gap-3 mb-5">
+  <select name="cls" onchange="this.form.submit()">
+    <% classes.forEach(c => { %><option value="<%= c %>" <%= c===cls?'selected':'' %>><%= c %></option><% }) %>
+  </select>
+  <input type="date" name="date" value="<%= date %>" onchange="this.form.submit()">
+</form>
+
+<div class="surface rounded-2xl overflow-hidden">
+  <table class="data w-full">
+    <thead><tr><th>Student</th><th>Roll No.</th><th>Status</th></tr></thead>
+    <tbody>
+      <% rows.forEach(r => {
+        const chipStyle = { present:'background:#3FB87F;color:#fff', absent:'background:#E8609C;color:#fff', holiday:'background:#FFC93C;color:#6b5400', 'not marked':'background:#22262e;color:#9aa1ac' }[r.status];
+      %>
+        <tr>
+          <td class="font-bold"><%= r.name %></td>
+          <td class="font-mono"><%= r.roll_no %></td>
+          <td><span class="chip" style="<%= chipStyle %>"><%= r.status %></span></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,28 @@
+<%- include('../partials/student-header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Class Schedule</h1>
+    <p class="text-sm text-soft mt-0.5">Your weekly timetable.</p>
+  </div>
+</div>
+
+<% let any = false; %>
+<% dayOrder.forEach(day => { if (byDay[day] && byDay[day].length) { any = true; %>
+  <div class="mb-6">
+    <div class="font-extrabold text-sm mb-2 text-soft uppercase tracking-wide"><%= day === 'Mon' ? 'Monday' : day === 'Tue' ? 'Tuesday' : day === 'Wed' ? 'Wednesday' : day === 'Thu' ? 'Thursday' : day === 'Fri' ? 'Friday' : day === 'Sat' ? 'Saturday' : 'Sunday' %></div>
+    <div class="space-y-2">
+      <% byDay[day].forEach(p => { %>
+        <div class="surface rounded-2xl p-4 flex items-center gap-4" style="border-left:4px solid #8B5CF6">
+          <div class="flex-1"><div class="font-bold text-sm"><%= p.subject %></div><div class="text-xs text-soft mt-0.5"><%= p.teacher_name %> · Room <%= p.room %></div></div>
+          <div class="font-mono text-xs text-soft"><%= p.time_range %></div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+<% } }) %>
+<% if (!any) { %>
+  <div class="surface rounded-2xl p-8 text-center text-sm text-soft">No schedule set up for your class yet.</div>
+<% } %>
+
+<%- include('../partials/footer') %>

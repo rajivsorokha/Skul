@@ -1,0 +1,35 @@
+<%- include('../partials/teacher-header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Announcements</h1>
+    <p class="text-sm text-soft mt-0.5">Post updates for your class, and see what's been sent school-wide.</p>
+  </div>
+</div>
+
+<div class="surface rounded-2xl p-5 mb-6">
+  <div class="font-extrabold text-sm mb-1">New Announcement</div>
+  <div class="text-xs text-soft mb-3">Will be sent to Class <%= teacher.class_teacher_of || '(your subject classes)' %>.</div>
+  <form method="POST" action="/teacher/announcements" class="space-y-3">
+    <input name="title" placeholder="Title" required class="w-full">
+    <textarea name="message" rows="3" placeholder="Message" required class="w-full"></textarea>
+    <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i>Send</button>
+  </form>
+</div>
+
+<div class="space-y-2.5">
+  <% rows.forEach(a => { %>
+    <div class="surface rounded-2xl p-4">
+      <div class="flex items-start justify-between">
+        <div>
+          <div class="font-bold text-sm"><%= a.title %></div>
+          <div class="text-xs text-soft mt-1 leading-relaxed max-w-xl"><%= a.message %></div>
+        </div>
+        <span class="chip flex-shrink-0" style="background:#22262e; color:#9aa1ac;"><%= a.audience %></span>
+      </div>
+      <div class="text-[10.5px] font-mono text-soft mt-2"><%= a.created_at %></div>
+    </div>
+  <% }) %>
+</div>
+
+<%- include('../partials/footer') %>

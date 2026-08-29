@@ -1,0 +1,17 @@
+<%- include('../partials/teacher-header') %>
+
+<div class="flex flex-col items-center py-4 pb-8">
+  <div class="w-20 h-20 rounded-full flex items-center justify-center text-white font-extrabold text-2xl mb-3" style="background:linear-gradient(135deg,#4C8DA6,#2C3444);"><%= initials(teacher.name) %></div>
+  <div class="font-extrabold text-lg"><%= teacher.name %></div>
+  <div class="text-sm text-soft mt-0.5"><%= teacher.subject %><% if (teacher.class_teacher_of) { %> · Class Teacher, <%= teacher.class_teacher_of %><% } %></div>
+</div>
+
+<div class="max-w-md mx-auto surface rounded-2xl p-5">
+  <div class="flex justify-between py-2.5 text-sm border-b border-app"><span class="text-soft">Employee ID</span><span class="font-bold"><%= teacher.employee_id %></span></div>
+  <div class="flex justify-between py-2.5 text-sm border-b border-app"><span class="text-soft">Subject</span><span class="font-bold"><%= teacher.subject %></span></div>
+  <div class="flex justify-between py-2.5 text-sm border-b border-app"><span class="text-soft">Class Teacher Of</span><span class="font-bold"><%= teacher.class_teacher_of || '—' %></span></div>
+  <div class="flex justify-between py-2.5 text-sm border-b border-app"><span class="text-soft">Email</span><span class="font-bold"><%= teacher.email %></span></div>
+  <div class="flex justify-between py-2.5 text-sm"><span class="text-soft">Phone</span><span class="font-bold"><%= teacher.phone || '—' %></span></div>
+</div>
+
+<%- include('../partials/footer') %>

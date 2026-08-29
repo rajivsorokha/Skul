@@ -1,0 +1,40 @@
+<%- include('../partials/staff-header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">My Attendance</h1>
+    <p class="text-sm text-soft mt-0.5">Your attendance history over the last 30 days.</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-3 gap-4 mb-6">
+  <div class="surface rounded-2xl p-5 text-center">
+    <div class="text-2xl font-mono font-bold" style="color:#3FB87F"><%= present %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Present</div>
+  </div>
+  <div class="surface rounded-2xl p-5 text-center">
+    <div class="text-2xl font-mono font-bold" style="color:#E8609C"><%= absent %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Absent</div>
+  </div>
+  <div class="surface rounded-2xl p-5 text-center">
+    <div class="text-2xl font-mono font-bold" style="color:#5B6EF5"><%= leave %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">On Leave</div>
+  </div>
+</div>
+
+<div class="surface rounded-2xl p-5 mb-6">
+  <div class="font-extrabold text-sm mb-1">Attendance Rate</div>
+  <div class="text-3xl font-mono font-bold" style="color:#3FB87F"><%= pct !== null ? pct + '%' : '—' %></div>
+</div>
+
+<div class="font-extrabold text-sm mb-2">Last 14 Days</div>
+<div class="surface rounded-2xl p-5">
+  <div class="grid grid-cols-7 md:grid-cols-14 gap-2">
+    <% const colorMap = {present:"#3FB87F", absent:"#E8609C", leave:"#5B6EF5"}; %>
+    <% last14.forEach(d => { %>
+      <div class="aspect-square rounded-lg" style="background:<%= colorMap[d.status] || '#22262e' %>" title="<%= d.date %> — <%= d.status %>"></div>
+    <% }) %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

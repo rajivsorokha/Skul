@@ -1,0 +1,45 @@
+<%- include('../partials/student-header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Attendance</h1>
+    <p class="text-sm text-soft mt-0.5">Your attendance history.</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-3 gap-4 mb-6">
+  <div class="surface rounded-2xl p-5 text-center">
+    <div class="text-2xl font-mono font-bold" style="color:#3FB87F"><%= present %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Present</div>
+  </div>
+  <div class="surface rounded-2xl p-5 text-center">
+    <div class="text-2xl font-mono font-bold" style="color:#E8609C"><%= absent %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Absent</div>
+  </div>
+  <div class="surface rounded-2xl p-5 text-center">
+    <div class="text-2xl font-mono font-bold" style="color:#FFC93C"><%= holiday %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Holidays</div>
+  </div>
+</div>
+
+<div class="surface rounded-2xl p-5 mb-6">
+  <div class="font-extrabold text-sm mb-1">Overall Attendance</div>
+  <div class="text-3xl font-mono font-bold" style="color:#3FB87F"><%= pct !== null ? pct + '%' : '—' %></div>
+</div>
+
+<div class="font-extrabold text-sm mb-2">Last 14 Days</div>
+<div class="surface rounded-2xl p-5">
+  <div class="grid grid-cols-7 md:grid-cols-14 gap-2 mb-4">
+    <% const colorMap = {present:"#3FB87F", absent:"#E8609C", holiday:"#FFC93C"}; %>
+    <% last14.forEach(d => { %>
+      <div class="aspect-square rounded-lg" style="background:<%= colorMap[d.status] || '#22262e' %>" title="<%= d.date %> — <%= d.status %>"></div>
+    <% }) %>
+  </div>
+  <div class="flex flex-wrap gap-4 text-[11px] font-medium text-soft">
+    <span class="flex items-center gap-1.5"><i class="w-2 h-2 rounded-full inline-block" style="background:#3FB87F"></i>Present</span>
+    <span class="flex items-center gap-1.5"><i class="w-2 h-2 rounded-full inline-block" style="background:#E8609C"></i>Absent</span>
+    <span class="flex items-center gap-1.5"><i class="w-2 h-2 rounded-full inline-block" style="background:#FFC93C"></i>Holiday</span>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

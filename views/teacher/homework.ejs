@@ -1,0 +1,37 @@
+<%- include('../partials/teacher-header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Homework</h1>
+    <p class="text-sm text-soft mt-0.5">Post assignments for your classes — <%= teacher.subject %>.</p>
+  </div>
+</div>
+
+<div class="surface rounded-2xl p-5 mb-6">
+  <div class="font-extrabold text-sm mb-3">Post New Homework</div>
+  <form method="POST" action="/teacher/homework" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+    <input name="title" placeholder="Title / instructions" required class="md:col-span-2">
+    <select name="class_name" required>
+      <% classes.forEach(c => { %><option value="<%= c %>"><%= c %></option><% }) %>
+    </select>
+    <input name="due_date" type="date">
+    <button class="btn btn-primary md:col-span-4"><i class="fa-solid fa-plus"></i>Post Homework</button>
+  </form>
+</div>
+
+<div class="space-y-2.5">
+  <% if (rows.length === 0) { %>
+    <div class="surface rounded-2xl p-8 text-center text-sm text-soft">No homework posted yet.</div>
+  <% } %>
+  <% rows.forEach(h => { %>
+    <div class="surface rounded-2xl p-4 flex items-center gap-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white flex-shrink-0" style="background:#3FB87F"><i class="fa-solid fa-book text-sm"></i></div>
+      <div class="flex-1"><div class="font-bold text-sm"><%= h.title %></div><div class="text-xs text-soft mt-1">Class <%= h.class_name %> · <%= h.subject %><% if (h.due_date) { %> · Due <%= h.due_date %><% } %></div></div>
+      <form method="POST" action="/teacher/homework/<%= h.id %>/delete" onsubmit="return confirm('Delete this homework post?')">
+        <button class="text-soft hover:text-white"><i class="fa-solid fa-trash text-xs"></i></button>
+      </form>
+    </div>
+  <% }) %>
+</div>
+
+<%- include('../partials/footer') %>

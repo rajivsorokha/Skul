@@ -1,0 +1,62 @@
+<%- include('../partials/teacher-header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Mark Attendance</h1>
+    <p class="text-sm text-soft mt-0.5">One tap per student, then save for the whole class.</p>
+  </div>
+</div>
+
+<form method="GET" action="/teacher/attendance" class="flex gap-3 mb-5">
+  <select name="cls" onchange="this.form.submit()">
+    <% classes.forEach(c => { %><option value="<%= c %>" <%= c===cls?'selected':'' %>><%= c %></option><% }) %>
+  </select>
+  <input type="date" name="date" value="<%= date %>" onchange="this.form.submit()">
+</form>
+
+<form method="POST" action="/teacher/attendance" id="attForm">
+  <input type="hidden" name="cls" value="<%= cls %>">
+  <input type="hidden" name="date" value="<%= date %>">
+  <div class="flex items-center justify-between mb-3">
+    <div class="text-sm font-bold">Class <%= cls %> · <%= date %></div>
+    <button type="button" class="btn btn-ghost" onclick="markAll('present')">Mark all present</button>
+  </div>
+  <div class="space-y-2 mb-5">
+    <% students.forEach(s => { %>
+      <div class="surface rounded-2xl p-3.5 flex items-center gap-3" data-row>
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0" style="background:#8B5CF6"><%= initials(s.name) %></div>
+        <div class="flex-1"><div class="font-bold text-sm"><%= s.name %></div><div class="text-xs text-soft">Roll No. <%= s.roll_no %></div></div>
+        <input type="hidden" name="status_<%= s.id %>" value="<%= s.status %>" data-hidden>
+        <div class="flex rounded-lg overflow-hidden border border-app">
+          <div class="seg-btn" data-val="present" style="background:<%= s.status==='present' ? '#3FB87F' : '#22262e' %>; color:<%= s.status==='present' ? '#fff' : '#9aa1ac' %>;" onclick="setStatus(this,'present')">Present</div>
+          <div class="seg-btn" data-val="absent" style="background:<%= s.status==='absent' ? '#E8609C' : '#22262e' %>; color:<%= s.status==='absent' ? '#fff' : '#9aa1ac' %>;" onclick="setStatus(this,'absent')">Absent</div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+  <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i>Save Attendance</button>
+</form>
+
+<script>
+function setStatus(el, val){
+  const row = el.closest('[data-row]');
+  row.querySelector('[data-hidden]').value = val;
+  row.querySelectorAll('.seg-btn').forEach(b => {
+    const active = b.dataset.val === val;
+    b.style.background = active ? (val === 'present' ? '#3FB87F' : '#E8609C') : '#22262e';
+    b.style.color = active ? '#fff' : '#9aa1ac';
+  });
+}
+function markAll(val){
+  document.querySelectorAll('[data-row]').forEach(row => {
+    row.querySelector('[data-hidden]').value = val;
+    row.querySelectorAll('.seg-btn').forEach(b => {
+      const active = b.dataset.val === val;
+      b.style.background = active ? '#3FB87F' : '#22262e';
+      b.style.color = active ? '#fff' : '#9aa1ac';
+    });
+  });
+}
+</script>
+
+<%- include('../partials/footer') %>

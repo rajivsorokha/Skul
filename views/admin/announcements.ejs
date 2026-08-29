@@ -1,0 +1,45 @@
+<%- include('../partials/header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Announcements</h1>
+    <p class="text-sm text-soft mt-0.5">Broadcast circulars and updates to parents, students, or staff.</p>
+  </div>
+</div>
+
+<div class="surface rounded-2xl p-5 mb-6">
+  <div class="font-extrabold text-sm mb-3">New Announcement</div>
+  <form method="POST" action="/admin/announcements" class="space-y-3">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <input name="title" placeholder="Title" required class="md:col-span-2">
+      <select name="audience">
+        <option>All</option><option>All Parents</option><option>All Students</option><option>All Staff</option>
+        <option>All Teachers</option><option>All Parents & Students</option>
+      </select>
+    </div>
+    <textarea name="message" rows="3" placeholder="Message" required class="w-full"></textarea>
+    <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i>Send Announcement</button>
+  </form>
+</div>
+
+<div class="space-y-2.5">
+  <% rows.forEach(a => { %>
+    <div class="surface rounded-2xl p-4">
+      <div class="flex items-start justify-between">
+        <div>
+          <div class="font-bold text-sm"><%= a.title %></div>
+          <div class="text-xs text-soft mt-1 leading-relaxed max-w-xl"><%= a.message %></div>
+        </div>
+        <div class="flex items-center gap-3 flex-shrink-0">
+          <span class="chip" style="background:#22262e; color:#9aa1ac;"><%= a.audience %></span>
+          <form method="POST" action="/admin/announcements/<%= a.id %>/delete" onsubmit="return confirm('Delete this announcement?')">
+            <button class="text-soft hover:text-white"><i class="fa-solid fa-trash text-xs"></i></button>
+          </form>
+        </div>
+      </div>
+      <div class="text-[10.5px] font-mono text-soft mt-2"><%= a.created_at %></div>
+    </div>
+  <% }) %>
+</div>
+
+<%- include('../partials/footer') %>

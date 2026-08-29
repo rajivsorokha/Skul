@@ -1,0 +1,61 @@
+<%- include('../partials/header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Fee Management</h1>
+    <p class="text-sm text-soft mt-0.5">Track dues, record payments, and generate receipts.</p>
+  </div>
+  <a href="/admin/reports/export/fees" class="btn btn-ghost"><i class="fa-solid fa-file-export"></i>Export CSV</a>
+</div>
+
+<div class="grid grid-cols-3 gap-4 mb-5">
+  <div class="surface rounded-2xl p-5">
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mb-1">Collected</div>
+    <div class="text-2xl font-mono font-bold" style="color:#3FB87F">₹<%= totalCollected.toLocaleString('en-IN') %></div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mb-1">Outstanding</div>
+    <div class="text-2xl font-mono font-bold" style="color:#E8609C">₹<%= totalDue.toLocaleString('en-IN') %></div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mb-1">Records Due</div>
+    <div class="text-2xl font-mono font-bold"><%= countDue %></div>
+  </div>
+</div>
+
+<div class="flex gap-2 mb-5">
+  <a href="/admin/fees?status=all" class="tab-link <%= filter==='all'?'active':'' %>">All</a>
+  <a href="/admin/fees?status=due" class="tab-link <%= filter==='due'?'active':'' %>">Due</a>
+  <a href="/admin/fees?status=paid" class="tab-link <%= filter==='paid'?'active':'' %>">Paid</a>
+</div>
+
+<div class="surface rounded-2xl overflow-hidden">
+  <table class="data w-full">
+    <thead><tr><th>Student</th><th>Class</th><th>Term</th><th>Amount</th><th>Due Date</th><th>Status</th><th>Receipt</th><th></th></tr></thead>
+    <tbody>
+      <% rows.forEach(r => { %>
+        <tr>
+          <td class="font-bold"><%= r.student_name %></td>
+          <td><%= r.class_name %></td>
+          <td><%= r.term %></td>
+          <td class="font-mono">₹<%= r.amount.toLocaleString('en-IN') %></td>
+          <td class="text-soft"><%= r.due_date || '—' %></td>
+          <td>
+            <% if (r.status === 'paid') { %><span class="chip" style="background:#3FB87F;color:#fff;">Paid</span>
+            <% } else { %><span class="chip" style="background:#E8609C;color:#fff;">Due</span><% } %>
+          </td>
+          <td class="font-mono text-soft"><%= r.receipt_no || '—' %></td>
+          <td>
+            <% if (r.status === 'due') { %>
+              <form method="POST" action="/admin/fees/<%= r.id %>/mark-paid">
+                <button class="btn btn-green" style="padding:6px 12px; font-size:11px;">Mark Paid</button>
+              </form>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>

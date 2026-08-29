@@ -1,0 +1,47 @@
+<%- include('../partials/teacher-header') %>
+
+<a href="/teacher/students" class="text-xs font-bold text-soft hover:text-white mb-4 inline-block"><i class="fa-solid fa-chevron-left mr-1"></i>Back to Student Profiles</a>
+
+<div class="flex items-center gap-4 mb-6">
+  <div class="w-16 h-16 rounded-full flex items-center justify-center text-white font-extrabold text-xl flex-shrink-0" style="background:#8B5CF6"><%= initials(s.name) %></div>
+  <div>
+    <h1 class="text-xl font-extrabold"><%= s.name %></h1>
+    <p class="text-sm text-soft mt-0.5">Roll No. <%= s.roll_no %> · Class <%= s.class_name %></p>
+  </div>
+</div>
+
+<div class="grid grid-cols-2 gap-4 mb-6">
+  <div class="surface rounded-2xl p-5 text-center">
+    <div class="text-2xl font-mono font-bold" style="color:#3FB87F"><%= attendancePct !== null ? attendancePct + '%' : '—' %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Attendance</div>
+  </div>
+  <div class="surface rounded-2xl p-5 text-center">
+    <div class="text-2xl font-mono font-bold"><%= s.blood_group || '—' %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Blood Group</div>
+  </div>
+</div>
+
+<div class="surface rounded-2xl p-5 mb-6">
+  <div class="flex justify-between py-2 text-sm border-b border-app"><span class="text-soft">Parent</span><span class="font-bold"><%= s.parent_name || '—' %></span></div>
+  <div class="flex justify-between py-2 text-sm border-b border-app"><span class="text-soft">Parent Contact</span><span class="font-bold"><%= s.parent_phone || '—' %></span></div>
+  <div class="flex justify-between py-2 text-sm border-b border-app"><span class="text-soft">Date of Birth</span><span class="font-bold"><%= s.dob || '—' %></span></div>
+  <div class="flex justify-between py-2 text-sm"><span class="text-soft">Bus Route</span><span class="font-bold"><%= s.bus_route || '—' %></span></div>
+</div>
+
+<div class="font-extrabold text-sm mb-2">Exam Results</div>
+<div class="surface rounded-2xl overflow-hidden">
+  <% if (results.length === 0) { %>
+    <div class="p-6 text-center text-sm text-soft">No results recorded yet.</div>
+  <% } else { %>
+    <table class="data w-full">
+      <thead><tr><th>Exam</th><th>Subject</th><th>Marks</th><th>Grade</th></tr></thead>
+      <tbody>
+        <% results.forEach(r => { %>
+          <tr><td><%= r.exam_name %></td><td class="font-bold"><%= r.subject %></td><td class="font-mono"><%= r.marks %>/100</td><td class="font-mono font-bold"><%= r.grade %></td></tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

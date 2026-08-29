@@ -1,0 +1,38 @@
+<%- include('../partials/header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Classes & Timetable</h1>
+    <p class="text-sm text-soft mt-0.5">Manage class sections and assign class teachers.</p>
+  </div>
+</div>
+
+<div class="surface rounded-2xl p-5 mb-6">
+  <div class="font-extrabold text-sm mb-3">Add New Class</div>
+  <form method="POST" action="/admin/classes" class="flex gap-3">
+    <input name="name" placeholder="Class name (e.g. 9-A)" required class="flex-1">
+    <button class="btn btn-primary"><i class="fa-solid fa-plus"></i>Add Class</button>
+  </form>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <% classes.forEach(c => { %>
+    <div class="surface rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-3">
+        <div class="font-extrabold text-base">Class <%= c.name %></div>
+        <span class="chip" style="background:#22262e; color:#9aa1ac;"><%= c.studentCount %> students</span>
+      </div>
+      <form method="POST" action="/admin/classes/<%= c.id %>/assign-teacher" class="flex gap-2">
+        <select name="teacher_id" class="flex-1">
+          <option value="">— No class teacher assigned —</option>
+          <% teachers.forEach(t => { %>
+            <option value="<%= t.user_id %>" <%= c.class_teacher_id === t.user_id ? 'selected' : '' %>><%= t.name %></option>
+          <% }) %>
+        </select>
+        <button class="btn btn-ghost" style="padding:9px 14px;"><i class="fa-solid fa-check"></i></button>
+      </form>
+    </div>
+  <% }) %>
+</div>
+
+<%- include('../partials/footer') %>

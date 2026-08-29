@@ -1,0 +1,25 @@
+<%- include('../partials/student-header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Notifications</h1>
+    <p class="text-sm text-soft mt-0.5">Announcements and circulars from school.</p>
+  </div>
+</div>
+
+<div class="space-y-2.5">
+  <% rows.forEach(a => { %>
+    <div class="surface rounded-2xl p-4">
+      <div class="flex items-start justify-between">
+        <div>
+          <div class="font-bold text-sm"><%= a.title %></div>
+          <div class="text-xs text-soft mt-1 leading-relaxed max-w-xl"><%= a.message %></div>
+        </div>
+        <span class="chip flex-shrink-0" style="background:#22262e; color:#9aa1ac;"><%= a.audience %></span>
+      </div>
+      <div class="text-[10.5px] font-mono text-soft mt-2"><%= a.created_at %></div>
+    </div>
+  <% }) %>
+</div>
+
+<%- include('../partials/footer') %>

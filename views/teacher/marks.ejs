@@ -1,0 +1,40 @@
+<%- include('../partials/teacher-header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Exam Marks Entry</h1>
+    <p class="text-sm text-soft mt-0.5"><%= subject %> — enter marks out of 100, then publish.</p>
+  </div>
+</div>
+
+<form method="GET" action="/teacher/marks" class="flex gap-3 mb-5">
+  <select name="cls" onchange="this.form.submit()">
+    <% classes.forEach(c => { %><option value="<%= c %>" <%= c===cls?'selected':'' %>><%= c %></option><% }) %>
+  </select>
+  <select name="exam" onchange="this.form.submit()">
+    <% exams.forEach(e => { %><option value="<%= e %>" <%= e===exam?'selected':'' %>><%= e %></option><% }) %>
+  </select>
+</form>
+
+<form method="POST" action="/teacher/marks">
+  <input type="hidden" name="cls" value="<%= cls %>">
+  <input type="hidden" name="exam" value="<%= exam %>">
+  <input type="hidden" name="action" value="publish">
+  <div class="surface rounded-2xl overflow-hidden mb-5">
+    <table class="data w-full">
+      <thead><tr><th>Student</th><th>Roll No.</th><th>Marks / 100</th></tr></thead>
+      <tbody>
+        <% students.forEach(s => { %>
+          <tr>
+            <td class="font-bold"><%= s.name %></td>
+            <td class="font-mono"><%= s.roll_no %></td>
+            <td><input type="number" min="0" max="100" name="marks_<%= s.id %>" value="<%= s.marks !== null && s.marks !== undefined ? s.marks : '' %>" class="w-20 text-center"></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i>Save & Publish</button>
+</form>
+
+<%- include('../partials/footer') %>

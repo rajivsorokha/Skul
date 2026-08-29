@@ -1,0 +1,25 @@
+<%- include('../partials/staff-header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Staff Directory</h1>
+    <p class="text-sm text-soft mt-0.5">Contact details for admin, teachers, and staff.</p>
+  </div>
+</div>
+
+<div class="surface rounded-2xl overflow-hidden">
+  <table class="data w-full">
+    <thead><tr><th>Name</th><th>Department / Subject</th><th>Phone</th></tr></thead>
+    <tbody>
+      <% rows.forEach(p => { %>
+        <tr>
+          <td class="font-bold"><%= p.name %></td>
+          <td><%= p.dept || '—' %></td>
+          <td class="font-mono text-soft"><%= p.phone || '—' %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>

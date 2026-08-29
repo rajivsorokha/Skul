@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — ST. JOSEPH'S CHANDEL</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'] } } } }
+</script>
+<style>
+  body{ background:#0f1115; font-family:'Inter',sans-serif; }
+  .surface{ background:#1a1d24; }
+  .surface-2{ background:#22262e; }
+  select{ background:#22262e; border:1.5px solid #2c313b; color:#f5f6f8; border-radius:12px; padding:12px 14px; font-size:14px; width:100%; }
+  select:focus{ outline:2px solid #8B5CF6; border-color:transparent; }
+  .role-btn{ flex:1; padding:14px 8px; border-radius:14px; text-align:center; cursor:pointer; border:2px solid #2c313b; background:#1a1d24; transition:all .12s; }
+  .role-btn.active{ border-color:#8B5CF6; background:#241b3a; }
+  .role-btn i{ font-size:18px; margin-bottom:6px; display:block; }
+</style>
+</head>
+<body class="text-[#f5f6f8] flex items-center justify-center min-h-screen px-4">
+
+<div class="w-full max-w-md">
+  <div class="flex flex-col items-center mb-8">
+    <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style="background:#8B5CF6"><i class="fa-solid fa-graduation-cap text-2xl text-white"></i></div>
+    <h1 class="text-xl font-extrabold tracking-tight">ST. JOSEPH'S CHANDEL</h1>
+    <p class="text-xs text-[#9aa1ac] font-bold uppercase tracking-widest mt-1">School Portal</p>
+  </div>
+
+  <div class="surface rounded-[1.75rem] p-6">
+    <% if (error) { %>
+      <div class="rounded-xl p-3 mb-4 text-sm font-semibold" style="background:#3a1c26; color:#f1a7c4;"><%= error %></div>
+    <% } %>
+    <form method="POST" action="/login" id="loginForm">
+      <div class="grid grid-cols-4 gap-2 mb-5" id="roleTabs">
+        <div class="role-btn active" data-role="admin"><i class="fa-solid fa-user-shield"></i><span class="text-[11px] font-bold">Admin</span></div>
+        <div class="role-btn" data-role="teacher"><i class="fa-solid fa-chalkboard-user"></i><span class="text-[11px] font-bold">Teacher</span></div>
+        <div class="role-btn" data-role="staff"><i class="fa-solid fa-id-badge"></i><span class="text-[11px] font-bold">Staff</span></div>
+        <div class="role-btn" data-role="student"><i class="fa-solid fa-user-graduate"></i><span class="text-[11px] font-bold">Student</span></div>
+      </div>
+
+      <label class="text-[11px] font-bold uppercase tracking-wide text-[#9aa1ac] block mb-1.5">Login as</label>
+      <select name="userId" id="userSelect" required></select>
+
+      <button type="submit" class="w-full font-bold py-3.5 rounded-2xl mt-5 text-white" style="background:#8B5CF6">
+        <i class="fa-solid fa-arrow-right-to-bracket mr-2"></i>Continue
+      </button>
+    </form>
+    <p class="text-[11px] text-[#9aa1ac] text-center mt-4 leading-relaxed">Demo login — pick a role and a name, no password needed. Only the Admin portal is fully built right now.</p>
+  </div>
+</div>
+
+<script>
+  const byRole = <%- JSON.stringify(byRole) %>;
+  const tabs = document.querySelectorAll('.role-btn');
+  const select = document.getElementById('userSelect');
+  function renderOptions(role){
+    select.innerHTML = byRole[role].map(u => `<option value="${u.id}">${u.name}</option>`).join('');
+  }
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      renderOptions(tab.dataset.role);
+    });
+  });
+  renderOptions('admin');
+</script>
+</body>
+</html>

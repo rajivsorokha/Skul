@@ -1,0 +1,78 @@
+<%- include('../partials/student-header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Dashboard</h1>
+    <p class="text-sm text-soft mt-0.5">Welcome back, <%= user.name.split(' ')[0] %> — Class <%= student.class_name %>, Roll No. <%= student.roll_no %></p>
+  </div>
+</div>
+
+<div class="grid grid-cols-3 gap-4 mb-6">
+  <div class="surface rounded-2xl p-5">
+    <div class="text-2xl font-mono font-bold" style="color:#3FB87F"><%= attendancePct !== null ? attendancePct + '%' : '—' %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Attendance</div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-2xl font-mono font-bold"><%= hwDue %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Homework Due</div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-2xl font-mono font-bold"><%= avgMarks !== null ? avgMarks + '%' : '—' %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Last Exam Average</div>
+  </div>
+</div>
+
+<div class="surface rounded-2xl p-5 mb-6">
+  <div class="flex items-center justify-between mb-3">
+    <div class="font-extrabold text-sm">Today's Schedule</div>
+    <a href="/student/schedule" class="text-xs font-bold text-soft hover:text-white">Full week →</a>
+  </div>
+  <% if (todaySchedule.length === 0) { %>
+    <div class="text-sm text-soft py-4 text-center">No classes scheduled for today.</div>
+  <% } else { %>
+    <div class="space-y-2">
+      <% todaySchedule.forEach(p => { %>
+        <div class="surface-2 rounded-xl p-3 flex items-center gap-4">
+          <div class="flex-1"><div class="font-bold text-sm"><%= p.subject %></div><div class="text-xs text-soft mt-0.5"><%= p.teacher_name %> · Room <%= p.room %></div></div>
+          <div class="font-mono text-xs text-soft"><%= p.time_range %></div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <a href="/student/homework" class="surface rounded-2xl p-5 hover:bg-[#22262e] transition-colors">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white mb-3" style="background:#3FB87F"><i class="fa-solid fa-book"></i></div>
+    <div class="font-bold text-sm">Homework</div>
+  </a>
+  <a href="/student/materials" class="surface rounded-2xl p-5 hover:bg-[#22262e] transition-colors">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white mb-3" style="background:#17B6C0"><i class="fa-solid fa-folder-open"></i></div>
+    <div class="font-bold text-sm">Study Materials</div>
+  </a>
+  <a href="/student/results" class="surface rounded-2xl p-5 hover:bg-[#22262e] transition-colors">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white mb-3" style="background:#A65CF7"><i class="fa-solid fa-award"></i></div>
+    <div class="font-bold text-sm">Exam Results</div>
+  </a>
+  <a href="/student/leave" class="surface rounded-2xl p-5 hover:bg-[#22262e] transition-colors">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white mb-3" style="background:#5B6EF5"><i class="fa-solid fa-plane-departure"></i></div>
+    <div class="font-bold text-sm">Apply Leave</div>
+  </a>
+</div>
+
+<div class="surface rounded-2xl p-5">
+  <div class="flex items-center justify-between mb-3">
+    <div class="font-extrabold text-sm">Announcements</div>
+    <a href="/student/notifications" class="text-xs font-bold text-soft hover:text-white">View all →</a>
+  </div>
+  <div class="space-y-2">
+    <% recentAnnouncements.forEach(a => { %>
+      <div class="surface-2 rounded-xl p-3">
+        <div class="font-bold text-sm"><%= a.title %></div>
+        <div class="text-xs text-soft mt-1 leading-relaxed"><%= a.message %></div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

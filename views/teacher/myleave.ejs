@@ -1,0 +1,43 @@
+<%- include('../partials/teacher-header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">My Leave</h1>
+    <p class="text-sm text-soft mt-0.5">Apply for your own leave and track approval status.</p>
+  </div>
+</div>
+
+<div class="surface rounded-2xl p-5 mb-6">
+  <div class="font-extrabold text-sm mb-3">New Application</div>
+  <form method="POST" action="/teacher/myleave" class="space-y-3">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <select name="type">
+        <option>Casual Leave</option><option>Sick Leave</option><option>Earned Leave</option>
+        <option>Emergency Leave</option><option>Half Day Leave</option><option>Compensatory Off</option>
+        <option>Training / Professional Development</option>
+      </select>
+      <input type="date" name="from_date" required>
+      <input type="date" name="to_date" required>
+    </div>
+    <textarea name="reason" rows="2" placeholder="Reason for leave" class="w-full"></textarea>
+    <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i>Submit Application</button>
+  </form>
+</div>
+
+<div class="font-extrabold text-sm mb-2">Application History</div>
+<div class="space-y-2.5">
+  <% if (rows.length === 0) { %>
+    <div class="surface rounded-2xl p-8 text-center text-sm text-soft">No leave applications yet.</div>
+  <% } %>
+  <% rows.forEach(l => {
+    const statusStyle = { Pending:'background:#FFC93C;color:#6b5400', Approved:'background:#3FB87F;color:#fff', Rejected:'background:#E8609C;color:#fff' }[l.status];
+  %>
+    <div class="surface rounded-2xl p-4 flex items-center gap-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white flex-shrink-0" style="background:#5B6EF5"><i class="fa-solid fa-plane-departure text-sm"></i></div>
+      <div class="flex-1"><div class="font-bold text-sm"><%= l.type %></div><div class="text-xs text-soft mt-1"><%= l.from_date %> → <%= l.to_date %> · <%= l.reason %></div></div>
+      <span class="chip flex-shrink-0" style="<%= statusStyle %>"><%= l.status %></span>
+    </div>
+  <% }) %>
+</div>
+
+<%- include('../partials/footer') %>

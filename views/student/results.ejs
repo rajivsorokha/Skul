@@ -1,0 +1,33 @@
+<%- include('../partials/student-header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Exam Results</h1>
+    <p class="text-sm text-soft mt-0.5">Your marks by exam and subject.</p>
+  </div>
+</div>
+
+<div class="flex gap-2 mb-5">
+  <% exams.forEach(e => { %><a href="/student/results?exam=<%= encodeURIComponent(e) %>" class="tab-link <%= e===exam?'active':'' %>"><%= e %></a><% }) %>
+</div>
+
+<div class="surface rounded-2xl p-5">
+  <div class="flex items-center justify-between mb-3">
+    <div class="font-extrabold text-sm">Overall Average</div>
+    <div class="font-mono font-bold text-xl" style="color:#3FB87F"><%= avg !== null ? avg + '%' : '—' %></div>
+  </div>
+  <% if (rows.length === 0) { %>
+    <div class="text-sm text-soft text-center py-6">No results recorded for this exam yet.</div>
+  <% } else { %>
+    <table class="data w-full">
+      <thead><tr><th>Subject</th><th>Marks</th><th>Grade</th></tr></thead>
+      <tbody>
+        <% rows.forEach(r => { %>
+          <tr><td class="font-bold"><%= r.subject %></td><td class="font-mono"><%= r.marks %>/100</td><td class="font-mono font-bold"><%= r.grade %></td></tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

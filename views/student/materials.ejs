@@ -1,0 +1,23 @@
+<%- include('../partials/student-header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Study Materials</h1>
+    <p class="text-sm text-soft mt-0.5">PDFs, videos, and links shared by your teachers.</p>
+  </div>
+</div>
+
+<div class="space-y-2.5">
+  <% if (rows.length === 0) { %>
+    <div class="surface rounded-2xl p-8 text-center text-sm text-soft">No materials shared yet.</div>
+  <% } %>
+  <% const typeIcon = {PDF:"fa-file-pdf", Video:"fa-circle-play", Link:"fa-link"}; %>
+  <% rows.forEach(m => { %>
+    <div class="surface rounded-2xl p-4 flex items-center gap-4">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white flex-shrink-0" style="background:#17B6C0"><i class="fa-solid <%= typeIcon[m.type] || 'fa-file' %> text-sm"></i></div>
+      <div class="flex-1"><div class="font-bold text-sm"><%= m.title %></div><div class="text-xs text-soft mt-1"><%= m.subject %> · <%= m.type %> · Added <%= m.date_added %></div></div>
+    </div>
+  <% }) %>
+</div>
+
+<%- include('../partials/footer') %>

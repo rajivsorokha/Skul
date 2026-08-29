@@ -1,0 +1,123 @@
+<%- include('../partials/header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">User Management</h1>
+    <p class="text-sm text-soft mt-0.5">Add, view, and remove students, teachers, and staff.</p>
+  </div>
+</div>
+
+<div class="flex gap-2 mb-5">
+  <a href="/admin/users?tab=students" class="tab-link <%= tab==='students'?'active':'' %>">Students (<%= students.length %>)</a>
+  <a href="/admin/users?tab=teachers" class="tab-link <%= tab==='teachers'?'active':'' %>">Teachers (<%= teachers.length %>)</a>
+  <a href="/admin/users?tab=staff" class="tab-link <%= tab==='staff'?'active':'' %>">Non-Teaching Staff (<%= staff.length %>)</a>
+</div>
+
+<% if (tab === 'students') { %>
+  <div class="surface rounded-2xl p-5 mb-5">
+    <div class="font-extrabold text-sm mb-3">Add New Student</div>
+    <form method="POST" action="/admin/users/students" class="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <input name="name" placeholder="Full name" required>
+      <input name="roll_no" type="number" placeholder="Roll no.">
+      <input name="class_name" placeholder="Class (e.g. 8-B)" required>
+      <input name="parent_name" placeholder="Parent name">
+      <input name="parent_phone" placeholder="Parent phone">
+      <input name="blood_group" placeholder="Blood group">
+      <button class="btn btn-primary col-span-2 md:col-span-1"><i class="fa-solid fa-plus"></i>Add Student</button>
+    </form>
+  </div>
+  <div class="surface rounded-2xl overflow-hidden">
+    <table class="data w-full">
+      <thead><tr><th>Name</th><th>Roll No.</th><th>Class</th><th>Parent</th><th>Parent Phone</th><th></th></tr></thead>
+      <tbody>
+        <% students.forEach(s => { %>
+          <tr>
+            <td class="font-bold"><%= s.name %></td>
+            <td class="font-mono"><%= s.roll_no %></td>
+            <td><%= s.class_name %></td>
+            <td><%= s.parent_name || '—' %></td>
+            <td class="font-mono text-soft"><%= s.parent_phone || '—' %></td>
+            <td>
+              <form method="POST" action="/admin/users/students/<%= s.id %>/delete" onsubmit="return confirm('Remove <%= s.name %>?')">
+                <button class="btn btn-red" style="padding:6px 10px;"><i class="fa-solid fa-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<% if (tab === 'teachers') { %>
+  <div class="surface rounded-2xl p-5 mb-5">
+    <div class="font-extrabold text-sm mb-3">Add New Teacher</div>
+    <form method="POST" action="/admin/users/teachers" class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <input name="name" placeholder="Full name" required>
+      <input name="subject" placeholder="Subject taught">
+      <input name="class_teacher_of" placeholder="Class teacher of (optional)">
+      <input name="phone" placeholder="Phone">
+      <button class="btn btn-primary col-span-2 md:col-span-1"><i class="fa-solid fa-plus"></i>Add Teacher</button>
+    </form>
+  </div>
+  <div class="surface rounded-2xl overflow-hidden">
+    <table class="data w-full">
+      <thead><tr><th>Name</th><th>Subject</th><th>Class Teacher Of</th><th>Employee ID</th><th>Phone</th><th></th></tr></thead>
+      <tbody>
+        <% teachers.forEach(t => { %>
+          <tr>
+            <td class="font-bold"><%= t.name %></td>
+            <td><%= t.subject || '—' %></td>
+            <td><%= t.class_teacher_of || '—' %></td>
+            <td class="font-mono text-soft"><%= t.employee_id %></td>
+            <td class="font-mono text-soft"><%= t.phone || '—' %></td>
+            <td>
+              <form method="POST" action="/admin/users/teachers/<%= t.id %>/delete" onsubmit="return confirm('Remove <%= t.name %>?')">
+                <button class="btn btn-red" style="padding:6px 10px;"><i class="fa-solid fa-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<% if (tab === 'staff') { %>
+  <div class="surface rounded-2xl p-5 mb-5">
+    <div class="font-extrabold text-sm mb-3">Add New Staff Member</div>
+    <form method="POST" action="/admin/users/staff" class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <input name="name" placeholder="Full name" required>
+      <select name="department">
+        <option>Administration</option><option>Security</option><option>Transportation</option>
+        <option>Health & Welfare</option><option>Facilities</option><option>Library</option><option>Sports</option>
+      </select>
+      <input name="designation" placeholder="Designation (e.g. Security Guard)">
+      <input name="phone" placeholder="Phone">
+      <button class="btn btn-primary col-span-2 md:col-span-1"><i class="fa-solid fa-plus"></i>Add Staff</button>
+    </form>
+  </div>
+  <div class="surface rounded-2xl overflow-hidden">
+    <table class="data w-full">
+      <thead><tr><th>Name</th><th>Designation</th><th>Department</th><th>Employee ID</th><th>Phone</th><th></th></tr></thead>
+      <tbody>
+        <% staff.forEach(s => { %>
+          <tr>
+            <td class="font-bold"><%= s.name %></td>
+            <td><%= s.designation || '—' %></td>
+            <td><%= s.department || '—' %></td>
+            <td class="font-mono text-soft"><%= s.employee_id %></td>
+            <td class="font-mono text-soft"><%= s.phone || '—' %></td>
+            <td>
+              <form method="POST" action="/admin/users/staff/<%= s.id %>/delete" onsubmit="return confirm('Remove <%= s.name %>?')">
+                <button class="btn btn-red" style="padding:6px 10px;"><i class="fa-solid fa-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,86 @@
+<%- include('../partials/header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Dashboard</h1>
+    <p class="text-sm text-soft mt-0.5">Welcome back, <%= user.name.split(' ')[0] %> — here's how the school is doing today.</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="surface rounded-2xl p-5">
+    <div class="text-2xl font-mono font-bold"><%= stats.totalStudents %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Students</div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-2xl font-mono font-bold"><%= stats.totalTeachers %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Teachers</div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-2xl font-mono font-bold"><%= stats.totalStaff %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Non-Teaching Staff</div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-2xl font-mono font-bold" style="color:<%= stats.pendingLeaves > 0 ? '#FFC93C' : '#f5f6f8' %>"><%= stats.pendingLeaves %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Pending Leaves</div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="surface rounded-2xl p-5">
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mb-2">Today's Attendance</div>
+    <div class="text-3xl font-mono font-bold" style="color:#3FB87F"><%= stats.attendancePct !== null ? stats.attendancePct + '%' : '—' %></div>
+    <div class="text-xs text-soft mt-1"><%= stats.attendancePct !== null ? 'marked so far today' : 'not marked yet today' %></div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mb-2">Fees Collected</div>
+    <div class="text-3xl font-mono font-bold" style="color:#3FB87F">₹<%= stats.feesCollected.toLocaleString('en-IN') %></div>
+    <div class="text-xs text-soft mt-1">this session</div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mb-2">Fees Due</div>
+    <div class="text-3xl font-mono font-bold" style="color:#E8609C">₹<%= stats.feesDue.toLocaleString('en-IN') %></div>
+    <div class="text-xs text-soft mt-1"><a href="/admin/fees?status=due" class="underline">view outstanding →</a></div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+  <div class="surface rounded-2xl p-5">
+    <div class="flex items-center justify-between mb-3">
+      <div class="font-extrabold text-sm">Pending Leave Requests</div>
+      <a href="/admin/leaves" class="text-xs font-bold text-soft hover:text-white">View all →</a>
+    </div>
+    <% if (recentLeaves.length === 0) { %>
+      <div class="text-sm text-soft py-4 text-center">No pending requests. 🎉</div>
+    <% } else { %>
+      <div class="space-y-2">
+        <% recentLeaves.forEach(l => { %>
+          <div class="surface-2 rounded-xl p-3 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-sm"><%= l.applicant %></div>
+              <div class="text-xs text-soft mt-0.5"><%= l.type %> · <%= l.from_date %> → <%= l.to_date %> · <span class="uppercase"><%= l.role %></span></div>
+            </div>
+            <span class="chip" style="background:#FFC93C; color:#6b5400;">Pending</span>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="surface rounded-2xl p-5">
+    <div class="flex items-center justify-between mb-3">
+      <div class="font-extrabold text-sm">Recent Announcements</div>
+      <a href="/admin/announcements" class="text-xs font-bold text-soft hover:text-white">View all →</a>
+    </div>
+    <div class="space-y-2">
+      <% recentAnnouncements.forEach(a => { %>
+        <div class="surface-2 rounded-xl p-3">
+          <div class="font-bold text-sm"><%= a.title %></div>
+          <div class="text-xs text-soft mt-1 leading-relaxed"><%= a.message %></div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

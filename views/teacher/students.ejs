@@ -1,0 +1,33 @@
+<%- include('../partials/teacher-header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Student Profiles</h1>
+    <p class="text-sm text-soft mt-0.5">Browse your students, attendance, and quick contact details.</p>
+  </div>
+</div>
+
+<form method="GET" action="/teacher/students" class="mb-5">
+  <select name="cls" onchange="this.form.submit()">
+    <% classes.forEach(c => { %><option value="<%= c %>" <%= c===cls?'selected':'' %>><%= c %></option><% }) %>
+  </select>
+</form>
+
+<div class="surface rounded-2xl overflow-hidden">
+  <table class="data w-full">
+    <thead><tr><th>Student</th><th>Roll No.</th><th>Attendance</th><th>Parent Contact</th><th></th></tr></thead>
+    <tbody>
+      <% students.forEach(s => { %>
+        <tr>
+          <td class="font-bold"><%= s.name %></td>
+          <td class="font-mono"><%= s.roll_no %></td>
+          <td><%= s.attendancePct !== null ? s.attendancePct + '%' : '—' %></td>
+          <td class="text-soft"><%= s.parent_phone || '—' %></td>
+          <td><a href="/teacher/students/<%= s.id %>" class="btn btn-ghost" style="padding:6px 12px; font-size:11px;">View <i class="fa-solid fa-chevron-right ml-1"></i></a></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>

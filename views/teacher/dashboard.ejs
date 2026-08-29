@@ -1,0 +1,70 @@
+<%- include('../partials/teacher-header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Dashboard</h1>
+    <p class="text-sm text-soft mt-0.5">Welcome back, <%= user.name.split(' ')[1] || user.name %> — <%= teacher.subject %><% if (myClass) { %> · Class Teacher of <%= myClass %><% } %></p>
+  </div>
+</div>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="surface rounded-2xl p-5">
+    <div class="text-2xl font-mono font-bold"><%= classesToday %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Classes Today</div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-2xl font-mono font-bold"><%= studentCount %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Students in My Class</div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-2xl font-mono font-bold" style="color:<%= pendingApprovals > 0 ? '#FFC93C' : '#f5f6f8' %>"><%= pendingApprovals %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Leave Requests</div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-2xl font-mono font-bold" style="color:#3FB87F"><%= avgAttendance !== null ? avgAttendance + '%' : '—' %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Today's Attendance</div>
+  </div>
+</div>
+
+<% if (!myClass) { %>
+<div class="surface rounded-2xl p-5 mb-6" style="border:1px solid #2c313b;">
+  <div class="text-sm font-bold flex items-center gap-2" style="color:#FFC93C"><i class="fa-solid fa-triangle-exclamation"></i>Not a class teacher</div>
+  <div class="text-xs text-soft mt-1.5 leading-relaxed">You're not assigned as a class teacher for any section yet, so attendance, leave approvals, and roster views default to the first available class. An admin can assign you to a class from Classes & Timetable.</div>
+</div>
+<% } %>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+  <a href="/teacher/attendance" class="surface rounded-2xl p-5 hover:bg-[#22262e] transition-colors">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white mb-3" style="background:#E8609C"><i class="fa-solid fa-clipboard-check"></i></div>
+    <div class="font-bold text-sm">Mark Attendance</div>
+  </a>
+  <a href="/teacher/homework" class="surface rounded-2xl p-5 hover:bg-[#22262e] transition-colors">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white mb-3" style="background:#3FB87F"><i class="fa-solid fa-book"></i></div>
+    <div class="font-bold text-sm">Post Homework</div>
+  </a>
+  <a href="/teacher/marks" class="surface rounded-2xl p-5 hover:bg-[#22262e] transition-colors">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white mb-3" style="background:#D6479A"><i class="fa-solid fa-pen-to-square"></i></div>
+    <div class="font-bold text-sm">Enter Exam Marks</div>
+  </a>
+  <a href="/teacher/leaves" class="surface rounded-2xl p-5 hover:bg-[#22262e] transition-colors">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white mb-3" style="background:#64748B"><i class="fa-solid fa-inbox"></i></div>
+    <div class="font-bold text-sm">Review Leave Requests</div>
+  </a>
+</div>
+
+<div class="surface rounded-2xl p-5 mt-6">
+  <div class="flex items-center justify-between mb-3">
+    <div class="font-extrabold text-sm">Recent Announcements</div>
+    <a href="/teacher/announcements" class="text-xs font-bold text-soft hover:text-white">View all →</a>
+  </div>
+  <div class="space-y-2">
+    <% recentAnnouncements.forEach(a => { %>
+      <div class="surface-2 rounded-xl p-3">
+        <div class="font-bold text-sm"><%= a.title %></div>
+        <div class="text-xs text-soft mt-1 leading-relaxed"><%= a.message %></div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

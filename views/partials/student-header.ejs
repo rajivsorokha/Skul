@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ST. JOSEPH'S CHANDEL — Student Portal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'], mono: ["'IBM Plex Mono'",'monospace'] } } } }
+</script>
+<style>
+  body{ background:#0f1115; font-family:'Inter',sans-serif; }
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb{ background:#2c313b; border-radius:4px; }
+  .surface{ background:#1a1d24; }
+  .surface-2{ background:#22262e; }
+  .border-app{ border-color:#2c313b; }
+  .text-soft{ color:#9aa1ac; }
+  .nav-link{ display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:12px; color:#9aa1ac; font-weight:600; font-size:13.5px; transition:background .12s, color .12s; }
+  .nav-link:hover{ background:#22262e; color:#f5f6f8; }
+  .nav-link.active{ background:#8B5CF6; color:#fff; }
+  table.data th{ text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; color:#9aa1ac; padding:10px 14px; border-bottom:1px solid #2c313b; }
+  table.data td{ padding:12px 14px; font-size:13.5px; color:#f5f6f8; border-bottom:1px solid #22262e; }
+  table.data tr:last-child td{ border-bottom:none; }
+  .btn{ font-weight:700; font-size:13px; padding:9px 16px; border-radius:10px; display:inline-flex; align-items:center; gap:6px; cursor:pointer; border:none; }
+  .btn-primary{ background:#8B5CF6; color:#fff; }
+  .btn-primary:hover{ background:#7c4fe0; }
+  .btn-ghost{ background:#22262e; color:#f5f6f8; }
+  .btn-ghost:hover{ background:#2c313b; }
+  input, select, textarea{ background:#22262e; border:1.5px solid #2c313b; color:#f5f6f8; border-radius:10px; padding:9px 12px; font-size:13.5px; }
+  input:focus, select:focus, textarea:focus{ outline:2px solid #8B5CF6; border-color:transparent; }
+  .chip{ font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.03em; padding:4px 10px; border-radius:999px; display:inline-block; }
+  .tab-link{ padding:8px 16px; border-radius:10px; font-size:13px; font-weight:700; color:#9aa1ac; }
+  .tab-link.active{ background:#8B5CF6; color:#fff; }
+</style>
+</head>
+<body class="text-[#f5f6f8]">
+<div class="flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 surface border-r border-app flex-shrink-0 flex flex-col p-4 sticky top-0 h-screen">
+    <div class="flex items-center gap-2.5 px-2 py-3 mb-4">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#8B5CF6"><i class="fa-solid fa-user-graduate text-white text-sm"></i></div>
+      <div>
+        <div class="font-extrabold text-sm leading-tight">ST. JOSEPH'S CHANDEL</div>
+        <div class="text-[10px] font-bold uppercase tracking-widest text-soft">Student Portal</div>
+      </div>
+    </div>
+    <nav class="space-y-1 flex-1 overflow-y-auto">
+      <a href="/student" class="nav-link <%= active==='dashboard'?'active':'' %>"><i class="fa-solid fa-gauge w-4"></i>Dashboard</a>
+      <a href="/student/schedule" class="nav-link <%= active==='schedule'?'active':'' %>"><i class="fa-solid fa-calendar-days w-4"></i>Class Schedule</a>
+      <a href="/student/homework" class="nav-link <%= active==='homework'?'active':'' %>"><i class="fa-solid fa-book w-4"></i>Homework</a>
+      <a href="/student/materials" class="nav-link <%= active==='materials'?'active':'' %>"><i class="fa-solid fa-folder-open w-4"></i>Study Materials</a>
+      <a href="/student/results" class="nav-link <%= active==='results'?'active':'' %>"><i class="fa-solid fa-award w-4"></i>Exam Results</a>
+      <a href="/student/attendance" class="nav-link <%= active==='attendance'?'active':'' %>"><i class="fa-solid fa-calendar-check w-4"></i>Attendance</a>
+      <a href="/student/leave" class="nav-link <%= active==='leave'?'active':'' %>"><i class="fa-solid fa-plane-departure w-4"></i>Apply for Leave</a>
+      <a href="/student/notifications" class="nav-link <%= active==='notifications'?'active':'' %>"><i class="fa-solid fa-bullhorn w-4"></i>Notifications</a>
+      <a href="/student/profile" class="nav-link <%= active==='profile'?'active':'' %>"><i class="fa-solid fa-id-card w-4"></i>My Profile</a>
+    </nav>
+    <div class="pt-3 border-t border-app">
+      <div class="flex items-center gap-3 px-2 py-2">
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0" style="background:<%= user.avatar_color || '#8B5CF6' %>"><%= initials(user.name) %></div>
+        <div class="min-w-0">
+          <div class="font-bold text-xs truncate"><%= user.name %></div>
+          <div class="text-[10px] text-soft uppercase font-bold">Student</div>
+        </div>
+      </div>
+      <form method="POST" action="/logout" class="mt-1">
+        <button class="nav-link w-full text-left" style="color:#E8609C"><i class="fa-solid fa-right-from-bracket w-4"></i>Logout</button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 min-w-0 p-8">

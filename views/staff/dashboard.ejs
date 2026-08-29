@@ -1,0 +1,63 @@
+<%- include('../partials/staff-header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Dashboard</h1>
+    <p class="text-sm text-soft mt-0.5">Welcome back, <%= user.name.split(' ')[0] %> — <%= staff.designation %></p>
+  </div>
+</div>
+
+<div class="surface rounded-2xl p-5 mb-6 flex items-center justify-between">
+  <div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide">Today's Status</div>
+    <div class="font-extrabold text-lg mt-1">
+      <% if (!todayRow || !todayRow.clock_in) { %>Not clocked in yet
+      <% } else if (!todayRow.clock_out) { %>Clocked in at <%= todayRow.clock_in %>
+      <% } else { %>Clocked out · <%= todayRow.clock_in %> → <%= todayRow.clock_out %><% } %>
+    </div>
+  </div>
+  <form method="POST" action="/staff/clock">
+    <button class="btn" style="background:<%= (!todayRow || !todayRow.clock_in) ? '#E8609C' : (!todayRow.clock_out ? '#3FB87F' : '#22262e') %>; color:#fff; padding:12px 22px;">
+      <%= (!todayRow || !todayRow.clock_in) ? 'Clock In' : (!todayRow.clock_out ? 'Clock Out' : 'Done for today') %>
+    </button>
+  </form>
+</div>
+
+<div class="grid grid-cols-3 gap-4 mb-6">
+  <div class="surface rounded-2xl p-5 text-center">
+    <div class="text-2xl font-mono font-bold"><%= present %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Present (30d)</div>
+  </div>
+  <div class="surface rounded-2xl p-5 text-center">
+    <div class="text-2xl font-mono font-bold"><%= absent %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Absent (30d)</div>
+  </div>
+  <div class="surface rounded-2xl p-5 text-center">
+    <div class="text-2xl font-mono font-bold"><%= leave %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">On Leave (30d)</div>
+  </div>
+</div>
+
+<% if (todayDuty) { %>
+<div class="rounded-2xl p-5 mb-6 text-white" style="background:linear-gradient(135deg,#FFC93C,#e0a90a);">
+  <div class="text-xs font-bold uppercase tracking-wide" style="color:#5c4a00">Today's Duty</div>
+  <div class="font-extrabold text-lg mt-1" style="color:#2b2200"><%= todayDuty.shift_label %> · <%= todayDuty.post %></div>
+  <div class="text-xs mt-1" style="color:#5c4a00"><%= todayDuty.time_range %></div>
+</div>
+<% } %>
+
+<div class="surface rounded-2xl p-5">
+  <div class="flex items-center justify-between mb-3">
+    <div class="font-extrabold text-sm">Announcements</div>
+  </div>
+  <div class="space-y-2">
+    <% recentAnnouncements.forEach(a => { %>
+      <div class="surface-2 rounded-xl p-3">
+        <div class="font-bold text-sm"><%= a.title %></div>
+        <div class="text-xs text-soft mt-1 leading-relaxed"><%= a.message %></div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,43 @@
+<%- include('../partials/header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Leave Management</h1>
+    <p class="text-sm text-soft mt-0.5">All student, teacher, and staff leave requests in one place.</p>
+  </div>
+</div>
+
+<div class="flex gap-2 mb-5">
+  <a href="/admin/leaves?status=Pending" class="tab-link <%= filter==='Pending'?'active':'' %>">Pending (<%= counts.Pending %>)</a>
+  <a href="/admin/leaves?status=Approved" class="tab-link <%= filter==='Approved'?'active':'' %>">Approved (<%= counts.Approved %>)</a>
+  <a href="/admin/leaves?status=Rejected" class="tab-link <%= filter==='Rejected'?'active':'' %>">Rejected (<%= counts.Rejected %>)</a>
+  <a href="/admin/leaves?status=all" class="tab-link <%= filter==='all'?'active':'' %>">All</a>
+</div>
+
+<div class="space-y-2.5">
+  <% if (rows.length === 0) { %>
+    <div class="surface rounded-2xl p-8 text-center text-sm text-soft">Nothing here.</div>
+  <% } %>
+  <% rows.forEach(l => {
+    const roleColor = { student:'#8B5CF6', teacher:'#4C8DA6', staff:'#64748B' }[l.applicant.role];
+    const statusStyle = { Pending:'background:#FFC93C;color:#6b5400', Approved:'background:#3FB87F;color:#fff', Rejected:'background:#E8609C;color:#fff' }[l.status];
+  %>
+    <div class="surface rounded-2xl p-4 flex items-center gap-4">
+      <div class="w-11 h-11 rounded-xl flex items-center justify-center text-white font-extrabold text-xs flex-shrink-0" style="background:<%= roleColor %>"><%= initials(l.applicant.name) %></div>
+      <div class="flex-1 min-w-0">
+        <div class="font-bold text-sm"><%= l.applicant.name %> <span class="text-[10px] font-bold uppercase tracking-wide text-soft ml-1">· <%= l.applicant.role %></span></div>
+        <div class="text-xs text-soft mt-1"><%= l.type %> · <%= l.from_date %> → <%= l.to_date %></div>
+        <div class="text-xs text-soft mt-0.5 italic">"<%= l.reason %>"</div>
+      </div>
+      <span class="chip flex-shrink-0" style="<%= statusStyle %>"><%= l.status %></span>
+      <% if (l.status === 'Pending') { %>
+        <div class="flex gap-2 flex-shrink-0">
+          <form method="POST" action="/admin/leaves/<%= l.id %>/decide"><input type="hidden" name="status" value="Approved"><button class="btn btn-green" style="padding:7px 12px; font-size:11px;">Approve</button></form>
+          <form method="POST" action="/admin/leaves/<%= l.id %>/decide"><input type="hidden" name="status" value="Rejected"><button class="btn btn-red" style="padding:7px 12px; font-size:11px;">Reject</button></form>
+        </div>
+      <% } %>
+    </div>
+  <% }) %>
+</div>
+
+<%- include('../partials/footer') %>
