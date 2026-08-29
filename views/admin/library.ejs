@@ -1,0 +1,73 @@
+<%- include('../partials/header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Library</h1>
+    <p class="text-sm text-soft mt-0.5">Catalogue books, issue copies to students, and track returns.</p>
+  </div>
+</div>
+
+<div class="surface rounded-2xl p-5 mb-5">
+  <div class="font-extrabold text-sm mb-3">Add New Book</div>
+  <form method="POST" action="/admin/library" class="grid grid-cols-2 md:grid-cols-6 gap-3">
+    <input name="title" placeholder="Book title" required class="col-span-2 md:col-span-2">
+    <input name="author" placeholder="Author">
+    <input name="isbn" placeholder="ISBN">
+    <select name="category">
+      <option>Classic</option><option>Science</option><option>Fantasy</option>
+      <option>Autobiography</option><option>Moral Stories</option><option>Reference</option>
+    </select>
+    <input name="total_copies" type="number" placeholder="Copies" min="1" value="1">
+    <button class="btn btn-primary col-span-2 md:col-span-1"><i class="fa-solid fa-plus"></i>Add Book</button>
+  </form>
+</div>
+
+<div class="space-y-4">
+  <% books.forEach(b => { %>
+    <div class="surface rounded-2xl p-5">
+      <div class="flex items-start justify-between mb-3">
+        <div>
+          <div class="font-extrabold text-sm"><%= b.title %></div>
+          <div class="text-xs text-soft mt-0.5"><%= b.author || '—' %> · <%= b.category %> · <span class="font-mono"><%= b.isbn || 'no isbn' %></span></div>
+        </div>
+        <div class="text-right">
+          <div class="font-mono font-bold"><%= b.available_copies %> / <%= b.total_copies %></div>
+          <div class="text-[10px] text-soft uppercase font-bold">available</div>
+        </div>
+      </div>
+
+      <% if (b.activeIssues.length > 0) { %>
+        <div class="mb-3 space-y-1.5">
+          <% b.activeIssues.forEach(i => { %>
+            <div class="surface-2 rounded-xl px-3 py-2 flex items-center justify-between text-sm">
+              <div>
+                <span class="font-bold"><%= i.student_name %></span>
+                <span class="text-soft text-xs ml-2"><%= i.class_name %> · issued <%= i.issue_date %> · due <%= i.due_date %></span>
+              </div>
+              <form method="POST" action="/admin/library/<%= b.id %>/return/<%= i.id %>">
+                <button class="btn btn-green" style="padding:5px 10px;"><i class="fa-solid fa-rotate-left"></i>Return</button>
+              </form>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+
+      <% if (b.available_copies > 0) { %>
+        <form method="POST" action="/admin/library/<%= b.id %>/issue" class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+          <select name="student_id" required class="md:col-span-2">
+            <option value="">Issue to student…</option>
+            <% students.forEach(s => { %>
+              <option value="<%= s.id %>"><%= s.name %></option>
+            <% }) %>
+          </select>
+          <input name="due_date" type="date" placeholder="Due date">
+          <button class="btn btn-primary"><i class="fa-solid fa-book"></i>Issue Copy</button>
+        </form>
+      <% } else { %>
+        <div class="text-xs text-soft font-bold uppercase tracking-wide">All copies issued — none available.</div>
+      <% } %>
+    </div>
+  <% }) %>
+</div>
+
+<%- include('../partials/footer') %>

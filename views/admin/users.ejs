@@ -38,9 +38,12 @@
             <td><%= s.parent_name || '—' %></td>
             <td class="font-mono text-soft"><%= s.parent_phone || '—' %></td>
             <td>
-              <form method="POST" action="/admin/users/students/<%= s.id %>/delete" onsubmit="return confirm('Remove <%= s.name %>?')">
-                <button class="btn btn-red" style="padding:6px 10px;"><i class="fa-solid fa-trash"></i></button>
-              </form>
+              <div class="flex gap-2 justify-end">
+                <a href="/admin/students/<%= s.id %>" class="btn btn-primary" style="padding:6px 10px;"><i class="fa-solid fa-folder-open"></i>Record</a>
+                <form method="POST" action="/admin/users/students/<%= s.id %>/delete" onsubmit="return confirm('Remove <%= s.name %>?')">
+                  <button class="btn btn-red" style="padding:6px 10px;"><i class="fa-solid fa-trash"></i></button>
+                </form>
+              </div>
             </td>
           </tr>
         <% }) %>

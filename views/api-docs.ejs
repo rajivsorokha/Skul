@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mobile App API — ST. JOSEPH'S CHANDEL</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'], mono: ["'IBM Plex Mono'",'monospace'] } } } }
+</script>
+<style>
+  body{ background:#0f1115; font-family:'Inter',sans-serif; color:#f5f6f8; }
+  .surface{ background:#1a1d24; }
+  .surface-2{ background:#22262e; }
+  .border-app{ border-color:#2c313b; }
+  .text-soft{ color:#9aa1ac; }
+  code, .mono{ font-family:'IBM Plex Mono',monospace; }
+  .method{ font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:11px; padding:3px 8px; border-radius:6px; letter-spacing:.03em; }
+  .m-get{ background:#3FB87F; color:#052e1b; }
+  .m-post{ background:#8B5CF6; color:#fff; }
+  pre{ background:#0b0d12; border:1px solid #2c313b; border-radius:12px; padding:14px 16px; font-size:12.5px; overflow-x:auto; line-height:1.6; }
+</style>
+</head>
+<body class="min-h-screen">
+<div class="max-w-4xl mx-auto px-6 py-10">
+
+  <div class="flex items-center gap-3 mb-2">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:#8B5CF6"><i class="fa-solid fa-mobile-screen text-white"></i></div>
+    <div>
+      <div class="font-extrabold">ST. JOSEPH'S CHANDEL — Mobile App API</div>
+      <div class="text-xs text-soft font-bold uppercase tracking-widest">REST · JSON · token auth</div>
+    </div>
+  </div>
+  <p class="text-sm text-soft mb-8">The same database that powers the admin/teacher/student/staff portals is exposed here for the school's Android & iOS apps. Base URL: <code class="mono text-[#FFC93C]">/api</code>.</p>
+
+  <div class="surface rounded-2xl p-6 mb-8">
+    <div class="font-extrabold text-sm mb-3">Authentication</div>
+    <ol class="text-sm text-soft space-y-1.5 list-decimal list-inside">
+      <li>POST <code class="mono">/api/auth/login</code> with a user id to receive a token.</li>
+      <li>Send it on every request as <code class="mono">Authorization: Bearer &lt;token&gt;</code>.</li>
+      <li>Tokens last 24 hours. Demo login has no passwords — the app can sign in with the same demo users.</li>
+    </ol>
+    <pre><span class="text-[#3FB87F]">// get a token</span>
+curl -X POST /api/auth/login -H "Content-Type: application/json" \
+  -d '{"name":"Aanya Sharma","role":"student"}'
+
+<span class="text-[#3FB87F]">// use it</span>
+curl /api/my-attendance -H "Authorization: Bearer tok_xxxx"</pre>
+  </div>
+
+  <div class="space-y-4">
+
+    <div class="surface rounded-2xl p-5">
+      <div class="font-extrabold text-sm mb-3">Auth</div>
+      <div class="space-y-2 text-sm">
+        <div><span class="method m-post">POST</span> <code class="mono">/api/auth/login</code> <span class="text-soft">→ { token, user, role }</span></div>
+        <div><span class="method m-post">GET</span> <code class="mono">/api/auth/me</code> <span class="text-soft">→ profile incl. student/teacher/staff record</span></div>
+      </div>
+    </div>
+
+    <div class="surface rounded-2xl p-5">
+      <div class="font-extrabold text-sm mb-3">Dashboards & Directories</div>
+      <div class="space-y-2 text-sm">
+        <div><span class="method m-get">GET</span> <code class="mono">/api/dashboard</code> <span class="text-soft">→ role-specific summary</span></div>
+        <div><span class="method m-get">GET</span> <code class="mono">/api/students?class=8-B</code> <span class="text-soft">→ list students (teacher/admin)</span></div>
+        <div><span class="method m-get">GET</span> <code class="mono">/api/students/:id</code> <span class="text-soft">→ full record + results + fees</span></div>
+        <div><span class="method m-get">GET</span> <code class="mono">/api/teachers</code> <span class="text-soft">→ list teachers (admin)</span></div>
+        <div><span class="method m-get">GET</span> <code class="mono">/api/staff</code> <span class="text-soft">→ list non-teaching staff (admin)</span></div>
+      </div>
+    </div>
+
+    <div class="surface rounded-2xl p-5">
+      <div class="font-extrabold text-sm mb-3">Attendance</div>
+      <div class="space-y-2 text-sm">
+        <div><span class="method m-get">GET</span> <code class="mono">/api/attendance?class=8-B&date=2026-08-29</code> <span class="text-soft">→ class register (teacher/admin)</span></div>
+        <div><span class="method m-post">POST</span> <code class="mono">/api/attendance</code> <span class="text-soft">→ body { cls, date, statuses: { studentId: 'present' } }</span></div>
+        <div><span class="method m-get">GET</span> <code class="mono">/api/my-attendance</code> <span class="text-soft">→ student's own summary + 30-day history</span></div>
+        <div><span class="method m-get">GET</span> <code class="mono">/api/staff/clock</code> / <span class="method m-post">POST</span> <code class="mono">/api/staff/clock</code> <span class="text-soft">→ staff clock in/out</span></div>
+      </div>
+    </div>
+
+    <div class="surface rounded-2xl p-5">
+      <div class="font-extrabold text-sm mb-3">Fees, Leave, Announcements</div>
+      <div class="space-y-2 text-sm">
+        <div><span class="method m-get">GET</span> <code class="mono">/api/fees</code> <span class="text-soft">→ own (student) or all (admin)</span></div>
+        <div><span class="method m-post">POST</span> <code class="mono">/api/fees/:id/pay</code> <span class="text-soft">→ mark paid, returns receipt no (admin)</span></div>
+        <div><span class="method m-get">GET</span> <code class="mono">/api/leaves</code> <span class="text-soft">→ own or all (admin)</span></div>
+        <div><span class="method m-post">POST</span> <code class="mono">/api/leaves</code> <span class="text-soft">→ body { type, from_date, to_date, reason }</span></div>
+        <div><span class="method m-post">POST</span> <code class="mono">/api/leaves/:id/decide</code> <span class="text-soft">→ body { status: 'Approved' | 'Rejected' } (admin/teacher)</span></div>
+        <div><span class="method m-get">GET</span> <code class="mono">/api/announcements</code> / <span class="method m-post">POST</span> <code class="mono">/api/announcements</code> <span class="text-soft">→ circulars (post: admin)</span></div>
+      </div>
+    </div>
+
+    <div class="surface rounded-2xl p-5">
+      <div class="font-extrabold text-sm mb-3">Homework, Results, Schedule</div>
+      <div class="space-y-2 text-sm">
+        <div><span class="method m-get">GET</span> <code class="mono">/api/homework</code> / <span class="method m-post">POST</span> <code class="mono">/api/homework</code> <span class="text-soft">→ assignments (post: teacher)</span></div>
+        <div><span class="method m-get">GET</span> <code class="mono">/api/results</code> <span class="text-soft">→ student's results grouped by exam</span></div>
+        <div><span class="method m-get">GET</span> <code class="mono">/api/schedule</code> <span class="text-soft">→ weekly timetable for student/teacher</span></div>
+      </div>
+    </div>
+
+    <div class="surface rounded-2xl p-5">
+      <div class="font-extrabold text-sm mb-3">School ERP</div>
+      <div class="space-y-2 text-sm">
+        <div><span class="method m-get">GET</span> <code class="mono">/api/library</code> / <span class="method m-post">POST</span> <code class="mono">/api/library</code> <span class="text-soft">→ catalogue (post: admin)</span></div>
+        <div><span class="method m-post">POST</span> <code class="mono">/api/library/:id/issue</code> <span class="text-soft">→ body { student_id, due_date } (admin)</span></div>
+        <div><span class="method m-post">POST</span> <code class="mono">/api/library/:id/return</code> <span class="text-soft">→ returns latest active issue (admin)</span></div>
+        <div><span class="method m-get">GET</span> <code class="mono">/api/events</code> / <span class="method m-post">POST</span> <code class="mono">/api/events</code> <span class="text-soft">→ school calendar (post: admin)</span></div>
+        <div><span class="method m-get">GET</span> <code class="mono">/api/exam-schedule?exam_name=Term 1&class_name=8-B</code> / <span class="method m-post">POST</span> <code class="mono">/api/exam-schedule</code> <span class="text-soft">→ exam timetable (post: admin)</span></div>
+      </div>
+    </div>
+
+    <div class="surface rounded-2xl p-5">
+      <div class="font-extrabold text-sm mb-3">Admin Student Records</div>
+      <div class="space-y-2 text-sm">
+        <div><span class="method m-get">GET</span> <code class="mono">/api/students/:id</code> <span class="text-soft">→ single record incl. attendance %, results, fee ledger</span></div>
+        <div><span class="method m-get">GET</span> <code class="mono">/api/students?status=active</code> <span class="text-soft">→ filter the register by class or status</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="text-center mt-10 text-xs text-soft">
+    <a href="/login" class="hover:text-white"><i class="fa-solid fa-arrow-left mr-1"></i>Back to portal</a>
+  </div>
+</div>
+</body>
+</html>

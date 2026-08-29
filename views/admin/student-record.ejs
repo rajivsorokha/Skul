@@ -1,0 +1,121 @@
+<%- include('../partials/header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <a href="/admin/records" class="text-xs font-bold text-soft hover:text-white"><i class="fa-solid fa-arrow-left mr-1"></i>Student Records</a>
+    <h1 class="text-xl font-extrabold mt-1"><%= s.name %></h1>
+    <p class="text-sm text-soft mt-0.5"><%= s.class_name %> · Roll <%= s.roll_no || '—' %> · <%= s.status %></p>
+  </div>
+  <a href="/admin/users?tab=students" class="btn btn-ghost"><i class="fa-solid fa-users"></i>User Management</a>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+  <div class="surface rounded-2xl p-5">
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mb-2">Attendance</div>
+    <div class="text-3xl font-mono font-bold" style="color:#3FB87F"><%= attendancePct !== null ? attendancePct + '%' : '—' %></div>
+    <div class="text-xs text-soft mt-1"><%= present %> present · <%= absent %> absent · <%= holiday %> holiday</div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mb-2">Fees Paid</div>
+    <div class="text-3xl font-mono font-bold" style="color:#3FB87F">₹<%= feesPaid.toLocaleString('en-IN') %></div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mb-2">Fees Due</div>
+    <div class="text-3xl font-mono font-bold" style="color:<%= feesDue > 0 ? '#E8609C' : '#3FB87F' %>">₹<%= feesDue.toLocaleString('en-IN') %></div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mb-2">Books Issued</div>
+    <div class="text-3xl font-mono font-bold"><%= issues.length %></div>
+    <div class="text-xs text-soft mt-1">currently borrowed</div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+  <div class="surface rounded-2xl p-5">
+    <div class="font-extrabold text-sm mb-3">Personal & Parent Details</div>
+    <div class="space-y-2 text-sm">
+      <div class="flex justify-between"><span class="text-soft">Date of Birth</span><span class="font-semibold"><%= s.dob || '—' %></span></div>
+      <div class="flex justify-between"><span class="text-soft">Gender</span><span class="font-semibold"><%= s.gender || '—' %></span></div>
+      <div class="flex justify-between"><span class="text-soft">Blood Group</span><span class="font-semibold"><%= s.blood_group || '—' %></span></div>
+      <div class="flex justify-between"><span class="text-soft">Admission Date</span><span class="font-semibold"><%= s.admission_date || '—' %></span></div>
+      <div class="flex justify-between"><span class="text-soft">Address</span><span class="font-semibold text-right"><%= s.address || '—' %></span></div>
+      <div class="flex justify-between"><span class="text-soft">Medical Info</span><span class="font-semibold"><%= s.medical_info || '—' %></span></div>
+      <div class="flex justify-between"><span class="text-soft">Bus Route</span><span class="font-semibold"><%= s.bus_route || '—' %></span></div>
+      <div class="flex justify-between"><span class="text-soft">Parent</span><span class="font-semibold"><%= s.parent_name || '—' %> (<%= s.parent_phone || '—' %>)</span></div>
+      <div class="flex justify-between"><span class="text-soft">Email</span><span class="font-semibold"><%= s.email %></span></div>
+      <div class="flex justify-between"><span class="text-soft">Phone</span><span class="font-semibold font-mono"><%= s.phone || '—' %></span></div>
+    </div>
+  </div>
+
+  <div class="surface rounded-2xl p-5">
+    <div class="font-extrabold text-sm mb-3">Fees</div>
+    <table class="data w-full">
+      <thead><tr><th>Term</th><th>Amount</th><th>Status</th><th>Receipt</th></tr></thead>
+      <tbody>
+        <% fees.forEach(f => { %>
+          <tr>
+            <td><%= f.term %></td>
+            <td class="font-mono">₹<%= f.amount.toLocaleString('en-IN') %></td>
+            <td><span class="chip" style="background:<%= f.status==='paid' ? '#3FB87F' : '#FFC93C' %>; color:#052e1b;"><%= f.status %></span></td>
+            <td class="font-mono text-soft"><%= f.receipt_no || '—' %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="surface rounded-2xl p-5">
+    <div class="font-extrabold text-sm mb-3">Academic Results</div>
+    <% if (results.length === 0) { %>
+      <div class="text-sm text-soft py-4 text-center">No results yet.</div>
+    <% } else { %>
+      <table class="data w-full">
+        <thead><tr><th>Exam</th><th>Subject</th><th>Marks</th><th>Grade</th></tr></thead>
+        <tbody>
+          <% results.forEach(r => { %>
+            <tr>
+              <td><%= r.exam_name %></td>
+              <td><%= r.subject %></td>
+              <td class="font-mono"><%= r.marks %></td>
+              <td class="font-mono" style="color:#8B5CF6"><%= r.grade %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+
+  <div class="surface rounded-2xl p-5">
+    <div class="font-extrabold text-sm mb-3">Library & Leave History</div>
+    <% if (issues.length === 0) { %>
+      <div class="text-sm text-soft py-2">No books currently issued.</div>
+    <% } else { %>
+      <div class="space-y-2 mb-4">
+        <% issues.forEach(i => { %>
+          <div class="surface-2 rounded-xl p-3 text-sm">
+            <div class="font-bold"><%= i.book_title %></div>
+            <div class="text-xs text-soft mt-0.5">Issued <%= i.issue_date %> · due <%= i.due_date %></div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+    <div class="font-bold text-xs uppercase tracking-wide text-soft mb-2">Leave Applications</div>
+    <% if (leaves.length === 0) { %>
+      <div class="text-sm text-soft py-2">No leave applications.</div>
+    <% } else { %>
+      <div class="space-y-2">
+        <% leaves.forEach(l => { %>
+          <div class="surface-2 rounded-xl p-3 text-sm flex items-center justify-between">
+            <div>
+              <div class="font-semibold"><%= l.type %> · <%= l.from_date %> → <%= l.to_date %></div>
+              <div class="text-xs text-soft mt-0.5"><%= l.reason || '—' %></div>
+            </div>
+            <span class="chip" style="background:<%= l.status==='Approved' ? '#3FB87F' : l.status==='Rejected' ? '#E8609C' : '#FFC93C' %>; color:#052e1b;"><%= l.status %></span>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

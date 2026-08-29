@@ -53,6 +53,7 @@
     <nav class="space-y-1 flex-1">
       <a href="/admin" class="nav-link <%= active==='dashboard'?'active':'' %>"><i class="fa-solid fa-gauge w-4"></i>Dashboard</a>
       <a href="/admin/users" class="nav-link <%= active==='users'?'active':'' %>"><i class="fa-solid fa-users w-4"></i>User Management</a>
+      <a href="/admin/records" class="nav-link <%= active==='records'?'active':'' %>"><i class="fa-solid fa-folder-open w-4"></i>Student Records</a>
       <a href="/admin/attendance" class="nav-link <%= active==='attendance'?'active':'' %>"><i class="fa-solid fa-calendar-check w-4"></i>Attendance Reports</a>
       <a href="/admin/fees" class="nav-link <%= active==='fees'?'active':'' %>"><i class="fa-solid fa-indian-rupee-sign w-4"></i>Fee Management</a>
       <a href="/admin/leaves" class="nav-link <%= active==='leaves'?'active':'' %>"><i class="fa-solid fa-plane-departure w-4"></i>Leave Management</a>
@@ -60,6 +61,13 @@
       <a href="/admin/classes" class="nav-link <%= active==='classes'?'active':'' %>"><i class="fa-solid fa-chalkboard w-4"></i>Classes & Timetable</a>
       <a href="/admin/transport" class="nav-link <%= active==='transport'?'active':'' %>"><i class="fa-solid fa-bus w-4"></i>Transportation</a>
       <a href="/admin/reports" class="nav-link <%= active==='reports'?'active':'' %>"><i class="fa-solid fa-file-export w-4"></i>Reports & Exports</a>
+
+      <div class="pt-3 mt-2 border-t border-app">
+        <div class="px-3 pb-1 text-[10px] font-extrabold uppercase tracking-widest text-soft">School ERP</div>
+        <a href="/admin/library" class="nav-link <%= active==='library'?'active':'' %>"><i class="fa-solid fa-book-open w-4"></i>Library</a>
+        <a href="/admin/events" class="nav-link <%= active==='events'?'active':'' %>"><i class="fa-solid fa-calendar-days w-4"></i>Events</a>
+        <a href="/admin/exams" class="nav-link <%= active==='exams'?'active':'' %>"><i class="fa-solid fa-clipboard-list w-4"></i>Exam Schedule</a>
+      </div>
     </nav>
     <div class="pt-3 border-t border-app">
       <div class="flex items-center gap-3 px-2 py-2">

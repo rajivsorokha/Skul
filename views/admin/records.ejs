@@ -1,0 +1,51 @@
+<%- include('../partials/header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Student Records</h1>
+    <p class="text-sm text-soft mt-0.5">Master register of every student's record — click a name for the full profile.</p>
+  </div>
+</div>
+
+<form method="GET" action="/admin/records" class="flex gap-3 mb-5 flex-wrap">
+  <select name="cls" class="w-44">
+    <option value="all">All classes</option>
+    <% classes.forEach(c => { %>
+      <option value="<%= c %>" <%= cls===c?'selected':'' %>><%= c %></option>
+    <% }) %>
+  </select>
+  <select name="status" class="w-44">
+    <option value="all">All statuses</option>
+    <option value="active" <%= status==='active'?'selected':'' %>>Active</option>
+    <option value="alumni" <%= status==='alumni'?'selected':'' %>>Alumni</option>
+    <option value="transferred" <%= status==='transferred'?'selected':'' %>>Transferred</option>
+  </select>
+  <button class="btn btn-ghost"><i class="fa-solid fa-filter"></i>Filter</button>
+</form>
+
+<div class="surface rounded-2xl overflow-hidden">
+  <table class="data w-full">
+    <thead><tr><th>Student</th><th>Class</th><th>Roll</th><th>Admission Date</th><th>Status</th><th>Attendance</th><th>Fees Due</th><th></th></tr></thead>
+    <tbody>
+      <% rows.forEach(s => { %>
+        <tr>
+          <td>
+            <div class="font-bold"><%= s.name %></div>
+            <div class="text-xs text-soft"><%= s.email %></div>
+          </td>
+          <td><%= s.class_name %></td>
+          <td class="font-mono"><%= s.roll_no || '—' %></td>
+          <td class="font-mono text-soft"><%= s.admission_date || '—' %></td>
+          <td>
+            <span class="chip" style="background:<%= s.status==='active' ? '#3FB87F' : '#2c313b' %>; color:<%= s.status==='active' ? '#052e1b' : '#9aa1ac' %>;"><%= s.status %></span>
+          </td>
+          <td class="font-mono"><%= s.attendancePct !== null ? s.attendancePct + '%' : '—' %></td>
+          <td class="font-mono" style="color:<%= s.feesDue > 0 ? '#E8609C' : '#3FB87F' %>">₹<%= s.feesDue.toLocaleString('en-IN') %></td>
+          <td><a href="/admin/students/<%= s.id %>" class="btn btn-primary" style="padding:6px 12px;"><i class="fa-solid fa-folder-open"></i>Record</a></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>

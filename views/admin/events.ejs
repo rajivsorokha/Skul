@@ -1,0 +1,48 @@
+<%- include('../partials/header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Events</h1>
+    <p class="text-sm text-soft mt-0.5">School calendar — circulars, functions, meetings and holidays.</p>
+  </div>
+</div>
+
+<div class="surface rounded-2xl p-5 mb-5">
+  <div class="font-extrabold text-sm mb-3">Add Event</div>
+  <form method="POST" action="/admin/events" class="grid grid-cols-2 md:grid-cols-6 gap-3">
+    <input name="title" placeholder="Event title" required class="col-span-2 md:col-span-2">
+    <input name="date" type="date" required>
+    <input name="time_range" placeholder="Time (e.g. 9:00 AM – 12:00 PM)">
+    <input name="location" placeholder="Location">
+    <input name="audience" placeholder="Audience (e.g. All Parents)">
+    <textarea name="description" placeholder="Description" class="col-span-2 md:col-span-6" rows="2"></textarea>
+    <button class="btn btn-primary col-span-2 md:col-span-1"><i class="fa-solid fa-plus"></i>Add Event</button>
+  </form>
+</div>
+
+<div class="surface rounded-2xl overflow-hidden">
+  <table class="data w-full">
+    <thead><tr><th>Date</th><th>Event</th><th>Time</th><th>Location</th><th>Audience</th><th></th></tr></thead>
+    <tbody>
+      <% rows.forEach(e => { %>
+        <tr>
+          <td class="font-mono font-bold" style="white-space:nowrap;"><%= e.date %></td>
+          <td>
+            <div class="font-bold"><%= e.title %></div>
+            <% if (e.description) { %><div class="text-xs text-soft mt-0.5"><%= e.description %></div><% } %>
+          </td>
+          <td class="text-soft"><%= e.time_range || '—' %></td>
+          <td class="text-soft"><%= e.location || '—' %></td>
+          <td><span class="chip" style="background:#8B5CF6; color:#fff;"><%= e.audience %></span></td>
+          <td>
+            <form method="POST" action="/admin/events/<%= e.id %>/delete" onsubmit="return confirm('Delete this event?')">
+              <button class="btn btn-red" style="padding:6px 10px;"><i class="fa-solid fa-trash"></i></button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>

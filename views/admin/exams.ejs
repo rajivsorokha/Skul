@@ -1,0 +1,54 @@
+<%- include('../partials/header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Exam Schedule</h1>
+    <p class="text-sm text-soft mt-0.5">Plan examination dates per class and subject.</p>
+  </div>
+</div>
+
+<div class="flex gap-2 mb-5 flex-wrap">
+  <% exams.forEach(e => { %>
+    <a href="/admin/exams?exam=<%= encodeURIComponent(e) %>&cls=<%= encodeURIComponent(cls) %>" class="tab-link <%= exam===e?'active':'' %>"><%= e %></a>
+  <% }) %>
+  <span class="mx-2 border-l border-app"></span>
+  <% classes.forEach(c => { %>
+    <a href="/admin/exams?exam=<%= encodeURIComponent(exam) %>&cls=<%= encodeURIComponent(c) %>" class="tab-link <%= cls===c?'active':'' %>"><%= c %></a>
+  <% }) %>
+</div>
+
+<div class="surface rounded-2xl p-5 mb-5">
+  <div class="font-extrabold text-sm mb-3">Add Exam Slot — <span class="text-soft"><%= exam %>, <%= cls %></span></div>
+  <form method="POST" action="/admin/exams" class="grid grid-cols-2 md:grid-cols-6 gap-3">
+    <input type="hidden" name="exam_name" value="<%= exam %>">
+    <input type="hidden" name="class_name" value="<%= cls %>">
+    <input name="subject" placeholder="Subject" required class="col-span-2 md:col-span-1">
+    <input name="date" type="date" required>
+    <input name="time_range" placeholder="Time (e.g. 8:00 AM – 11:00 AM)">
+    <input name="room" placeholder="Room / Hall">
+    <button class="btn btn-primary col-span-2 md:col-span-1"><i class="fa-solid fa-plus"></i>Add Slot</button>
+  </form>
+</div>
+
+<div class="surface rounded-2xl overflow-hidden">
+  <table class="data w-full">
+    <thead><tr><th>Date</th><th>Subject</th><th>Time</th><th>Room</th><th></th></tr></thead>
+    <tbody>
+      <% rows.forEach(r => { %>
+        <tr>
+          <td class="font-mono font-bold" style="white-space:nowrap;"><%= r.date %></td>
+          <td class="font-bold"><%= r.subject %></td>
+          <td class="text-soft"><%= r.time_range || '—' %></td>
+          <td class="text-soft"><%= r.room || '—' %></td>
+          <td>
+            <form method="POST" action="/admin/exams/<%= r.id %>/delete" onsubmit="return confirm('Delete this slot?')">
+              <button class="btn btn-red" style="padding:6px 10px;"><i class="fa-solid fa-trash"></i></button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/footer') %>

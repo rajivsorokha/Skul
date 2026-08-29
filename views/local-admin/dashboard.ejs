@@ -1,0 +1,125 @@
+<%- include('./header') %>
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="text-xl font-extrabold">Records Office Overview</h1>
+    <p class="text-sm text-soft mt-0.5">Local on-premise panel for the school's student records.</p>
+  </div>
+  <a href="/local-admin/students/new" class="btn btn-primary"><i class="fa-solid fa-user-plus"></i>New Student Record</a>
+</div>
+
+<div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+  <div class="surface rounded-2xl p-5">
+    <div class="text-2xl font-mono font-bold"><%= stats.totalStudents %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Active Students</div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-2xl font-mono font-bold"><%= stats.totalAlumni %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Left / Alumni</div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-2xl font-mono font-bold"><%= stats.totalParents %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Guardians on File</div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-2xl font-mono font-bold" style="color:<%= stats.openIncidents > 0 ? '#FFC93C' : '#f2f5f9' %>"><%= stats.openIncidents %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Open Incidents</div>
+  </div>
+  <div class="surface rounded-2xl p-5">
+    <div class="text-2xl font-mono font-bold" style="color:#3FB87F"><%= stats.attendancePct !== null ? stats.attendancePct + '%' : '—' %></div>
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mt-1">Today's Attendance</div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+  <div class="surface rounded-2xl p-5">
+    <div class="flex items-center justify-between mb-3">
+      <div class="font-extrabold text-sm">Attendance — last 7 days</div>
+      <a href="/local-admin/reports" class="text-xs font-bold text-soft hover:text-white">Reports →</a>
+    </div>
+    <div class="flex items-end gap-2 h-32">
+      <% last7.forEach(d => { %>
+        <div class="flex-1 flex flex-col items-center gap-1">
+          <div class="text-[10px] font-mono font-bold" style="color:#3FB87F"><%= d.pct %>%</div>
+          <div class="w-full rounded-t-md" style="height:<%= Math.max(6, d.pct) %>%; background:#0FA3A3;"></div>
+          <div class="text-[10px] text-soft font-bold"><%= d.label %></div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <div class="surface rounded-2xl p-5">
+    <div class="flex items-center justify-between mb-3">
+      <div class="font-extrabold text-sm">Enrolment by Class</div>
+      <a href="/local-admin/students" class="text-xs font-bold text-soft hover:text-white">Register →</a>
+    </div>
+    <% if (byClass.length === 0) { %>
+      <div class="text-sm text-soft py-4 text-center">No active students.</div>
+    <% } else { %>
+      <div class="space-y-2.5">
+        <% byClass.forEach(c => { %>
+          <div class="flex justify-between text-xs font-bold mb-1"><span><%= c.class_name %></span><span class="font-mono"><%= c.c %></span></div>
+          <div class="h-2 rounded-full surface-2 overflow-hidden mb-2">
+            <div class="h-full rounded-full" style="width:<%= Math.round(c.c / byClass[0].c * 100) %>%; background:#0FA3A3;"></div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+  <div class="surface rounded-2xl p-5">
+    <div class="flex items-center justify-between mb-3">
+      <div class="font-extrabold text-sm">Recently Added Records</div>
+      <a href="/local-admin/students" class="text-xs font-bold text-soft hover:text-white">All →</a>
+    </div>
+    <div class="space-y-2">
+      <% recentStudents.forEach(s => { %>
+        <a href="/local-admin/students/<%= s.id %>" class="surface-2 rounded-xl p-3 block hover:border hover:border-[#0FA3A3]">
+          <div class="font-bold text-sm"><%= s.name %></div>
+          <div class="text-xs text-soft mt-0.5"><%= s.class_name %> · admitted <%= s.admission_date || '—' %></div>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+
+  <div class="surface rounded-2xl p-5">
+    <div class="flex items-center justify-between mb-3">
+      <div class="font-extrabold text-sm">Open Incidents</div>
+      <a href="/local-admin/students" class="text-xs font-bold text-soft hover:text-white">Register →</a>
+    </div>
+    <% if (recentIncidents.length === 0) { %>
+      <div class="text-sm text-soft py-4 text-center">No open incidents.</div>
+    <% } else { %>
+      <div class="space-y-2">
+        <% recentIncidents.forEach(d => { %>
+          <div class="surface-2 rounded-xl p-3">
+            <div class="font-bold text-sm"><%= d.student_name %></div>
+            <div class="text-xs text-soft mt-0.5"><%= d.incident_type %> · <%= d.date %></div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="surface rounded-2xl p-5">
+    <div class="flex items-center justify-between mb-3">
+      <div class="font-extrabold text-sm">Upcoming School Events</div>
+    </div>
+    <% if (upcomingEvents.length === 0) { %>
+      <div class="text-sm text-soft py-4 text-center">No upcoming events.</div>
+    <% } else { %>
+      <div class="space-y-2">
+        <% upcomingEvents.forEach(e => { %>
+          <div class="surface-2 rounded-xl p-3">
+            <div class="font-bold text-sm"><%= e.title %></div>
+            <div class="text-xs text-soft mt-0.5"><%= e.date %> · <%= e.time_range || 'all day' %></div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('./footer') %>

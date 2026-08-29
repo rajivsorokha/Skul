@@ -44,6 +44,67 @@
   </div>
 </div>
 
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <a href="/admin/records" class="surface rounded-2xl p-5 hover:border hover:border-[#8B5CF6]">
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mb-2">Student Records</div>
+    <div class="text-3xl font-mono font-bold"><%= stats.activeStudents %></div>
+    <div class="text-xs text-soft mt-1">active student records on file</div>
+  </a>
+  <a href="/admin/library" class="surface rounded-2xl p-5 hover:border hover:border-[#8B5CF6]">
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mb-2">Library</div>
+    <div class="text-3xl font-mono font-bold"><%= stats.booksTotal %></div>
+    <div class="text-xs text-soft mt-1"><%= stats.booksIssued %> books currently issued</div>
+  </a>
+  <a href="/admin/exams" class="surface rounded-2xl p-5 hover:border hover:border-[#8B5CF6]">
+    <div class="text-xs text-soft font-bold uppercase tracking-wide mb-2">Classes</div>
+    <div class="text-3xl font-mono font-bold"><%= classCounts.length %></div>
+    <div class="text-xs text-soft mt-1">sections with enrolled students</div>
+  </a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+  <div class="surface rounded-2xl p-5">
+    <div class="flex items-center justify-between mb-3">
+      <div class="font-extrabold text-sm">Upcoming Events</div>
+      <a href="/admin/events" class="text-xs font-bold text-soft hover:text-white">Manage →</a>
+    </div>
+    <% if (upcomingEvents.length === 0) { %>
+      <div class="text-sm text-soft py-4 text-center">No upcoming events.</div>
+    <% } else { %>
+      <div class="space-y-2">
+        <% upcomingEvents.forEach(e => { %>
+          <div class="surface-2 rounded-xl p-3 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-sm"><%= e.title %></div>
+              <div class="text-xs text-soft mt-0.5"><%= e.date %> · <%= e.time_range || 'all day' %> · <%= e.location || '' %></div>
+            </div>
+            <span class="chip" style="background:#8B5CF6; color:#fff;"><%= e.audience %></span>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="surface rounded-2xl p-5">
+    <div class="flex items-center justify-between mb-3">
+      <div class="font-extrabold text-sm">Enrolment by Class</div>
+      <a href="/admin/users?tab=students" class="text-xs font-bold text-soft hover:text-white">Manage →</a>
+    </div>
+    <div class="space-y-2.5">
+      <% classCounts.forEach(c => { %>
+        <div>
+          <div class="flex justify-between text-xs font-bold mb-1">
+            <span><%= c.class_name %></span><span class="font-mono"><%= c.c %> students</span>
+          </div>
+          <div class="h-2 rounded-full surface-2 overflow-hidden">
+            <div class="h-full rounded-full" style="width:<%= Math.round(c.c / classCounts[0].c * 100) %>%; background:#8B5CF6;"></div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
   <div class="surface rounded-2xl p-5">
     <div class="flex items-center justify-between mb-3">

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Records Office Login — ST. JOSEPH'S CHANDEL</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body{ background:#0b0f14; font-family:'Inter',sans-serif; }
+  .surface{ background:#151a21; }
+  select{ background:#1d232c; border:1.5px solid #262d38; color:#f2f5f9; border-radius:12px; padding:12px 14px; font-size:14px; width:100%; }
+  select:focus{ outline:2px solid #0FA3A3; border-color:transparent; }
+</style>
+</head>
+<body class="text-[#f2f5f9] flex items-center justify-center min-h-screen px-4">
+
+<div class="w-full max-w-md">
+  <div class="flex flex-col items-center mb-8">
+    <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style="background:#0FA3A3"><i class="fa-solid fa-folder-open text-2xl text-[#04181a]"></i></div>
+    <h1 class="text-xl font-extrabold tracking-tight">RECORDS OFFICE</h1>
+    <p class="text-xs text-[#98a1ad] font-bold uppercase tracking-widest mt-1">ST. JOSEPH'S CHANDEL · Local Admin</p>
+  </div>
+
+  <div class="surface rounded-[1.75rem] p-6">
+    <div class="rounded-xl p-3 mb-4 text-xs font-semibold leading-relaxed" style="background:#0d2b2b; color:#7fd9d9;">
+      <i class="fa-solid fa-server mr-1"></i> On-premise panel for student records. This tool runs locally at the school and is <b>not</b> connected to the mobile app API.
+    </div>
+    <% if (error) { %>
+      <div class="rounded-xl p-3 mb-4 text-sm font-semibold" style="background:#3a1c26; color:#f1a7c4;"><%= error %></div>
+    <% } %>
+    <form method="POST" action="/local-admin/login">
+      <label class="text-[11px] font-bold uppercase tracking-wide text-[#98a1ad] block mb-1.5">Records administrator</label>
+      <select name="userId" required>
+        <% users.forEach(u => { %>
+          <option value="<%= u.id %>"><%= u.name %></option>
+        <% }) %>
+      </select>
+      <button type="submit" class="w-full font-bold py-3.5 rounded-2xl mt-5 text-[#04181a]" style="background:#0FA3A3">
+        <i class="fa-solid fa-arrow-right-to-bracket mr-2"></i>Enter Records Office
+      </button>
+    </form>
+    <a href="/login" class="block text-center text-[11px] font-bold mt-4 text-[#98a1ad] hover:text-white"><i class="fa-solid fa-arrow-left mr-1"></i>Main portal login</a>
+  </div>
+</div>
+</body>
+</html>
