@@ -157,7 +157,150 @@ CREATE TABLE IF NOT EXISTS duty_schedule (
   time_range TEXT NOT NULL,
   post TEXT
 );
+
+CREATE TABLE IF NOT EXISTS books (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  author TEXT,
+  isbn TEXT,
+  category TEXT,
+  total_copies INTEGER NOT NULL DEFAULT 1,
+  available_copies INTEGER NOT NULL DEFAULT 1,
+  added_at TEXT DEFAULT (date('now'))
+);
+
+CREATE TABLE IF NOT EXISTS book_issues (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  book_id INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+  student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  issue_date TEXT NOT NULL,
+  due_date TEXT NOT NULL,
+  return_date TEXT,
+  UNIQUE(book_id, student_id, return_date)
+);
+
+CREATE TABLE IF NOT EXISTS events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  date TEXT NOT NULL,
+  time_range TEXT,
+  location TEXT,
+  audience TEXT DEFAULT 'All',
+  description TEXT,
+  created_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS exam_schedule (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  exam_name TEXT NOT NULL,
+  class_name TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  date TEXT NOT NULL,
+  time_range TEXT,
+  room TEXT
+);
+
+CREATE TABLE IF NOT EXISTS student_parents (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  relationship TEXT,
+  mobile TEXT,
+  work_phone TEXT,
+  home_phone TEXT,
+  email TEXT,
+  occupation TEXT,
+  workplace TEXT,
+  is_primary INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS grade_history (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  year INTEGER,
+  term TEXT,
+  class_name TEXT,
+  overall_grade TEXT,
+  percentage INTEGER,
+  rank INTEGER,
+  remarks TEXT,
+  recorded_at TEXT DEFAULT (date('now'))
+);
+
+CREATE TABLE IF NOT EXISTS student_movements (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  from_class TEXT,
+  to_class TEXT,
+  move_type TEXT NOT NULL DEFAULT 'promotion',
+  date TEXT NOT NULL,
+  remarks TEXT
+);
+
+CREATE TABLE IF NOT EXISTS student_medical (
+  student_id INTEGER PRIMARY KEY REFERENCES students(id) ON DELETE CASCADE,
+  genotype TEXT,
+  allergies TEXT,
+  conditions TEXT,
+  medications TEXT,
+  emergency_contact TEXT,
+  care_instructions TEXT
+);
+
+CREATE TABLE IF NOT EXISTS disciplinary_records (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  date TEXT NOT NULL,
+  incident_type TEXT,
+  description TEXT,
+  action_taken TEXT,
+  status TEXT DEFAULT 'Open',
+  notes TEXT
+);
+
+CREATE TABLE IF NOT EXISTS achievements (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  date TEXT,
+  category TEXT,
+  title TEXT NOT NULL,
+  detail TEXT
+);
+
+CREATE TABLE IF NOT EXISTS documents (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  student_id INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  doc_type TEXT,
+  title TEXT NOT NULL,
+  file_name TEXT,
+  notes TEXT,
+  uploaded_at TEXT DEFAULT (datetime('now'))
+);
 `);
+
+// ---- migrations for existing databases (student records) ----
+const studentColumns = ['gender', 'address', 'admission_date', 'medical_info', 'status'];
+const existingStudentCols = db.prepare(`PRAGMA table_info(students)`).all().map(c => c.name);
+studentColumns.forEach(col => {
+  if (!existingStudentCols.includes(col)) {
+    let def = 'TEXT';
+    if (col === 'status') def = "TEXT NOT NULL DEFAULT 'active'";
+    db.exec(`ALTER TABLE students ADD COLUMN ${col} ${def}`);
+  }
+});
+// extended local-records columns on students
+const studentRecordCols = ['religion', 'nationality', 'language', 'student_id_no', 'photo', 'emergency_name', 'emergency_phone', 'emergency_relation'];
+const existingStudentCols2 = db.prepare(`PRAGMA table_info(students)`).all().map(c => c.name);
+studentRecordCols.forEach(col => {
+  if (!existingStudentCols2.includes(col)) db.exec(`ALTER TABLE students ADD COLUMN ${col} TEXT`);
+});
+// attendance remarks (absence reasons / late arrivals)
+const attCols = db.prepare(`PRAGMA table_info(attendance)`).all().map(c => c.name);
+if (!attCols.includes('remark')) db.exec(`ALTER TABLE attendance ADD COLUMN remark TEXT`);
+if (!attCols.includes('late_minutes')) db.exec(`ALTER TABLE attendance ADD COLUMN late_minutes INTEGER`);
+if (!db.prepare(`PRAGMA table_info(books)`).all().some(c => c.name === 'available_copies')) {
+  db.exec(`ALTER TABLE books ADD COLUMN available_copies INTEGER NOT NULL DEFAULT 1`);
+}
 
 if (isNew) {
   console.log('Seeding fresh database...');
@@ -342,5 +485,185 @@ if (isNew) {
 
   console.log('Seed complete.');
 }
+
+// ---- ERP + student-record seed (runs on existing databases too, only when empty) ----
+const seedERP = () => {
+  const bookCount = db.prepare(`SELECT COUNT(*) c FROM books`).get().c;
+  if (bookCount === 0) {
+    const insertBook = db.prepare(`INSERT INTO books (title, author, isbn, category, total_copies, available_copies) VALUES (?,?,?,?,?,?)`);
+    const booksSeed = [
+      ['The Diary of a Young Girl', 'Anne Frank', '9788172344799', 'Autobiography', 3, 3],
+      ['Wings of Fire', 'A.P.J. Abdul Kalam', '9788173711466', 'Autobiography', 2, 2],
+      ['A Brief History of Time', 'Stephen Hawking', '9780553380163', 'Science', 2, 1],
+      ['Gulliver\'s Travels', 'Jonathan Swift', '9780140620937', 'Classic', 4, 4],
+      ['Panchatantra Stories', 'Vishnu Sharma', '9788172864286', 'Moral Stories', 5, 5],
+      ['Harry Potter and the Philosopher\'s Stone', 'J.K. Rowling', '9780747532699', 'Fantasy', 3, 2],
+      ['Tom Sawyer', 'Mark Twain', '9780140620159', 'Classic', 2, 2],
+      ['Black Beauty', 'Anna Sewell', '9780140366842', 'Classic', 2, 1],
+    ];
+    booksSeed.forEach(([title, author, isbn, category, total, avail]) =>
+      insertBook.run(title, author, isbn, category, total, avail));
+  }
+
+  const eventCount = db.prepare(`SELECT COUNT(*) c FROM events`).get().c;
+  if (eventCount === 0) {
+    const insertEvent = db.prepare(`INSERT INTO events (title, date, time_range, location, audience, description) VALUES (?,?,?,?,?,?)`);
+    const eventsSeed = [
+      ['Independence Day Celebration', '2026-08-15', '8:00 AM – 9:30 AM', 'School Ground', 'All', 'Flag hoisting followed by cultural programme.'],
+      ['Parent-Teacher Meeting', '2026-09-05', '10:00 AM – 1:00 PM', 'Main Hall', 'All Parents', 'Meet class teachers to discuss student progress for Term 1.'],
+      ['Annual Sports Day', '2026-11-20', '9:00 AM – 4:00 PM', 'Sports Field', 'All', 'Inter-house athletics and games.'],
+      ['Science Exhibition', '2026-10-09', '10:00 AM – 2:00 PM', 'Science Block', 'Students', 'Class 6-10 science projects on display.'],
+      ['Staff Development Workshop', '2026-09-18', '2:00 PM – 5:00 PM', 'Staff Room', 'All Staff', 'Workshop on new teaching methodologies.'],
+    ];
+    eventsSeed.forEach(e => insertEvent.run(...e));
+  }
+
+  const examCount = db.prepare(`SELECT COUNT(*) c FROM exam_schedule`).get().c;
+  if (examCount === 0) {
+    const insertExam = db.prepare(`INSERT INTO exam_schedule (exam_name, class_name, subject, date, time_range, room) VALUES (?,?,?,?,?,?)`);
+    const examsSeed = [
+      ['Term 1', '8-B', 'Mathematics', '2026-09-08', '8:00 AM – 11:00 AM', 'Hall 1'],
+      ['Term 1', '8-B', 'Science', '2026-09-10', '8:00 AM – 11:00 AM', 'Hall 1'],
+      ['Term 1', '8-B', 'English', '2026-09-12', '8:00 AM – 11:00 AM', 'Hall 2'],
+      ['Term 1', '8-B', 'Social Studies', '2026-09-14', '8:00 AM – 11:00 AM', 'Hall 2'],
+      ['Term 1', '8-B', 'Hindi', '2026-09-16', '8:00 AM – 10:00 AM', 'Hall 3'],
+      ['Term 1', '8-B', 'Computer Science', '2026-09-18', '8:00 AM – 10:00 AM', 'Computer Lab'],
+    ];
+    examsSeed.forEach(e => insertExam.run(...e));
+  }
+
+  const recordCount = db.prepare(`SELECT COUNT(*) c FROM students WHERE admission_date IS NOT NULL`).get().c;
+  if (recordCount === 0) {
+    const students = db.prepare(`SELECT s.id FROM students s`).all();
+    const update = db.prepare(`UPDATE students SET gender=?, address=?, admission_date=?, medical_info=?, status='active' WHERE id=?`);
+    const genders = ['F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M'];
+    students.forEach((s, i) => {
+      update.run(
+        genders[i % genders.length],
+        `${Math.floor(100 + Math.random() * 800)} Lamka Road, Chandel`,
+        `${2019 + (i % 3)}-04-0${1 + (i % 8)}`,
+        'None',
+        s.id
+      );
+    });
+  }
+};
+seedERP();
+
+// ---- Local Records Office seed (separate on-premise panel, runs when tables are empty) ----
+const seedLocalRecords = () => {
+  const students = db.prepare(`
+    SELECT s.*, u.name FROM students s JOIN users u ON u.id = s.user_id ORDER BY s.id
+  `).all();
+
+  const needBasic = db.prepare(`SELECT COUNT(*) c FROM students WHERE student_id_no IS NULL`).get().c;
+  if (needBasic > 0) {
+    const rels = ['Christian', 'Hindu', 'Christian', 'Hindu', 'Muslim', 'Hindu', 'Hindu', 'Christian', 'Hindu', 'Christian'];
+    const langs = ['Tankhul', 'Thadou', 'Vaiphei', 'Hindi', 'Meitei', 'Nepali', 'Tamil', 'English', 'Mizo', 'Paite'];
+    const emRel = ['Mother', 'Father', 'Mother', 'Father', 'Mother', 'Father', 'Mother', 'Father', 'Mother', 'Father'];
+    students.forEach((s, i) => {
+      db.prepare(`
+        UPDATE students SET religion=?, nationality='Indian', language=?, student_id_no=?,
+          emergency_name=?, emergency_phone=?, emergency_relation=?, medical_info=COALESCE(medical_info,'None')
+        WHERE id=?
+      `).run(
+        rels[i % rels.length], langs[i % langs.length],
+        'SJC-' + String(2026 - (s.admission_date ? parseInt(s.admission_date.slice(0, 4), 10) : 2024)) + '-' + String(i + 1).padStart(3, '0'),
+        s.parent_name || s.name + "'s Guardian", s.parent_phone || '', emRel[i % emRel.length],
+        s.id
+      );
+    });
+  }
+
+  const parentCount = db.prepare(`SELECT COUNT(*) c FROM student_parents`).get().c;
+  if (parentCount === 0) {
+    const insertP = db.prepare(`INSERT INTO student_parents (student_id, name, relationship, mobile, home_phone, email, occupation, workplace, is_primary) VALUES (?,?,?,?,?,?,?,?,1)`);
+    const occupations = ['Government Teacher', 'Business Owner', 'Homemaker', 'Bank Officer', 'Farmer', 'Nurse'];
+    students.forEach((s, i) => {
+      insertP.run(s.id, s.parent_name || 'Guardian', s.emergency_relation === 'Mother' ? 'Mother' : 'Father', s.parent_phone || '', '',
+        `${(s.name.split(' ')[0]).toLowerCase()}@gmail.com`, occupations[i % occupations.length], 'Chandel, Manipur');
+    });
+  }
+
+  const gradeCount = db.prepare(`SELECT COUNT(*) c FROM grade_history`).get().c;
+  if (gradeCount === 0) {
+    const insertG = db.prepare(`INSERT INTO grade_history (student_id, year, term, class_name, overall_grade, percentage, rank, remarks) VALUES (?,?,?,?,?,?,?,?)`);
+    students.forEach(s => {
+      const avg = db.prepare(`SELECT AVG(marks) a FROM results WHERE student_id=?`).get(s.id).a;
+      const pct = avg ? Math.round(avg) : 65 + Math.floor(Math.random() * 25);
+      const grade = pct >= 90 ? 'A+' : pct >= 80 ? 'A' : pct >= 70 ? 'B+' : pct >= 60 ? 'B' : 'C';
+      const rank = 1 + Math.floor(Math.random() * 8);
+      insertG.run(s.id, 2025, 'Term 2', '7-A', grade, pct, rank, 'Promoted on merit.');
+      insertG.run(s.id, 2024, 'Annual', '6-B', grade, pct - 3, rank + 2, '');
+    });
+  }
+
+  const moveCount = db.prepare(`SELECT COUNT(*) c FROM student_movements`).get().c;
+  if (moveCount === 0) {
+    const insertM = db.prepare(`INSERT INTO student_movements (student_id, from_class, to_class, move_type, date, remarks) VALUES (?,?,?,?,?,?)`);
+    students.forEach(s => {
+      insertM.run(s.id, '7-A', s.class_name, 'promotion', (s.admission_date || '2025-04-01'), 'Year-end promotion.');
+    });
+  }
+
+  const medCount = db.prepare(`SELECT COUNT(*) c FROM student_medical`).get().c;
+  if (medCount === 0) {
+    const insertM = db.prepare(`INSERT INTO student_medical (student_id, genotype, allergies, conditions, medications, emergency_contact, care_instructions) VALUES (?,?,?,?,?,?,?)`);
+    const genotypes = ['AA', 'AS', 'AA', 'AA', 'AS', 'AA', 'AA', 'AA', 'AS', 'AA'];
+    students.forEach((s, i) => {
+      insertM.run(s.id, genotypes[i % genotypes.length], i % 3 === 0 ? 'Dust pollen' : 'None', i % 4 === 0 ? 'Mild asthma' : 'None', i % 5 === 0 ? 'Inhaler (as needed)' : 'None', `${s.parent_name} — ${s.parent_phone}`, 'Notify parents immediately in case of fever above 100F.');
+    });
+  }
+
+  const discCount = db.prepare(`SELECT COUNT(*) c FROM disciplinary_records`).get().c;
+  if (discCount === 0) {
+    const insertD = db.prepare(`INSERT INTO disciplinary_records (student_id, date, incident_type, description, action_taken, status, notes) VALUES (?,?,?,?,?,?,?)`);
+    const seedDisc = [
+      ['Late to class', 'Arrived 15 minutes late without a pass.', 'Verbal warning.', 'Closed', 'Discussed with parent over phone.'],
+      ['Class participation', 'Actively led the science group project.', 'Positive — commended in assembly.', 'Closed', 'Recognized by the Headmistress.'],
+    ];
+    students.forEach((s, i) => {
+      if (i % 3 === 0) insertD.run(s.id, '2026-07-15', seedDisc[0][0], seedDisc[0][1], seedDisc[0][2], seedDisc[0][3], seedDisc[0][4]);
+      if (i % 4 === 1) insertD.run(s.id, '2026-08-10', seedDisc[1][0], seedDisc[1][1], seedDisc[1][2], seedDisc[1][3], seedDisc[1][4]);
+    });
+  }
+
+  const achCount = db.prepare(`SELECT COUNT(*) c FROM achievements`).get().c;
+  if (achCount === 0) {
+    const insertA = db.prepare(`INSERT INTO achievements (student_id, date, category, title, detail) VALUES (?,?,?,?,?)`);
+    const seedAch = [
+      ['Academic', 'First in Class — Mathematics', 'Scored the highest marks in Half Yearly.'],
+      ['Sports', 'Inter-School Football Runners-Up', 'Member of the school team, district level.'],
+      ['Arts', 'District Painting Competition Winner', 'First prize in the senior category.'],
+      ['Leadership', 'Class Monitor', 'Elected by classmates for Term 2.'],
+      ['Extra-curricular', 'Quiz Club Member', 'Represented the school in the state quiz.'],
+    ];
+    students.forEach((s, i) => {
+      insertA.run(s.id, '2026-08-18', seedAch[i % 5][0], seedAch[i % 5][1], seedAch[i % 5][2]);
+    });
+  }
+
+  const docCount = db.prepare(`SELECT COUNT(*) c FROM documents`).get().c;
+  if (docCount === 0) {
+    const insertDoc = db.prepare(`INSERT INTO documents (student_id, doc_type, title, file_name, notes) VALUES (?,?,?,?,?)`);
+    students.forEach(s => {
+      insertDoc.run(s.id, 'Birth Certificate', 'Birth Certificate', '', 'Verified against original.');
+      insertDoc.run(s.id, 'Previous School', 'Transcript — Class 7', '', 'Received from previous school.');
+      insertDoc.run(s.id, 'Medical', 'Immunization Record', '', 'Copy on file.');
+      insertDoc.run(s.id, 'Admission Form', 'Admission Form 2026', '', 'Signed by parent.');
+      insertDoc.run(s.id, 'Consent Form', 'Parent Consent Form', '', 'Field trip + media consent.');
+    });
+  }
+
+  const remarkCount = db.prepare(`SELECT COUNT(*) c FROM attendance WHERE status='absent' AND remark IS NOT NULL`).get().c;
+  if (remarkCount === 0) {
+    const absents = db.prepare(`SELECT id FROM attendance WHERE status='absent' ORDER BY id LIMIT 12`).all();
+    const reasons = ['Fever', 'Family function', 'Travel', 'Doctor appointment', 'Personal', 'Weather'];
+    absents.forEach((a, i) => {
+      db.prepare(`UPDATE attendance SET remark=? WHERE id=?`).run(reasons[i % reasons.length], a.id);
+    });
+  }
+};
+seedLocalRecords();
 
 module.exports = db;
